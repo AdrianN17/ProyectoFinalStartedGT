@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>pe.edu.galaxy.training.java.bom</groupId>
+    <artifactId>oms-starter-bom-core</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>Galaxy Training – Starter Libraries BOM</name>
+    <description>Bill of Materials (BOM) for Galaxy Training starter and utility libraries</description>
+    <url>https://github.com/GalaxyTraining/galaxy-starter-libraries-bom</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>anovoa</id>
+            <name>Arístides Novoa Arbildo</name>
+            <email>anovoa@galaxy.edu.pe</email>
+            <organization>Galaxy Training</organization>
+            <organizationUrl>https://appgalaxy.com.pe</organizationUrl>
+            <roles>
+                <role>author</role>
+                <role>maintainer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>pe.edu.galaxy.training.java</groupId>
+                <artifactId>oms-starter-logs-core</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>pe.edu.galaxy.training.java</groupId>
+                <artifactId>oms-starter-audit-core</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>pe.edu.galaxy.training.java</groupId>
+                <artifactId>oms-starter-security-core</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>pe.edu.galaxy.training.java</groupId>
+                <artifactId>oms-starter-observability-core</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>

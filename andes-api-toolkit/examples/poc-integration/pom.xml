@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>pe.andes.api</groupId>
+        <artifactId>andes-api-toolkit</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>poc-integration</artifactId>
+    <packaging>jar</packaging>
+
+    <name>PoC Integration</name>
+    <description>API-first: expone su propio contrato (contracts/openapi-integration.yaml, patron delegate) que internamente consume la Orders API externa (contracts/openapi-client-a.yaml, modelos generados) usando andes-api-client. Demuestra andes-api-server y andes-api-client trabajando juntos.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>pe.andes.api</groupId>
+            <artifactId>andes-api-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pe.andes.api</groupId>
+            <artifactId>andes-api-server-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>pe.andes.api</groupId>
+            <artifactId>andes-api-client-spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Required at compile time by the code generated from contracts/openapi-integration.yaml -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
+            <version>${swagger-annotations.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>poc-integration</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-checkout-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/../../contracts/openapi-integration.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+                            <apiPackage>pe.andes.poc.integration.generated.api</apiPackage>
+                            <modelPackage>pe.andes.poc.integration.generated.model</modelPackage>
+                            <invokerPackage>pe.andes.poc.integration.generated</invokerPackage>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <importMappings>
+                                <ApiError>pe.andes.api.common.model.ApiError</ApiError>
+                                <ApiErrorDetail>pe.andes.api.common.model.ApiErrorDetail</ApiErrorDetail>
+                                <ApiMetadata>pe.andes.api.common.model.ApiMetadata</ApiMetadata>
+                            </importMappings>
+                            <schemaMappings>
+                                <ApiError>pe.andes.api.common.model.ApiError</ApiError>
+                                <ApiErrorDetail>pe.andes.api.common.model.ApiErrorDetail</ApiErrorDetail>
+                                <ApiMetadata>pe.andes.api.common.model.ApiMetadata</ApiMetadata>
+                            </schemaMappings>
+                            <configOptions>
+                                <interfaceOnly>false</interfaceOnly>
+                                <delegatePattern>true</delegatePattern>
+                                <useTags>true</useTags>
+                                <useSpringBoot3>true</useSpringBoot3>
+                                <openApiNullable>false</openApiNullable>
+                                <documentationProvider>none</documentationProvider>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-orders-models</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/../../contracts/openapi-client-a.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <output>${project.build.directory}/generated-sources/openapi</output>
+                            <generateApis>false</generateApis>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <modelPackage>pe.andes.poc.integration.generated.orders.model</modelPackage>
+                            <apiPackage>pe.andes.poc.integration.generated.orders.api</apiPackage>
+                            <invokerPackage>pe.andes.poc.integration.generated.orders</invokerPackage>
+                            <configOptions>
+                                <useBeanValidation>false</useBeanValidation>
+                                <openApiNullable>false</openApiNullable>
+                                <documentationProvider>none</documentationProvider>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

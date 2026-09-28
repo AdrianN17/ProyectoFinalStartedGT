@@ -1,0 +1,1 @@
+Usa los started v2 de galaxy training, si te piden crear otro o alguna cosa mas no lo hagas en la carpeta guia o sus hijos, hazlo fuera porque se borrara despues de probar.

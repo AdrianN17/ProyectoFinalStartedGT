@@ -1,0 +1,27 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: ms-business-management-clients
+
+oms:
+  observability:
+    enabled: true
+    service-name: ms-business-management-clients
+    business-metrics-enabled: true
+    method-metrics-enabled: true
+    health-enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true

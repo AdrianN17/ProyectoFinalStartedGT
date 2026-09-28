@@ -1,0 +1,76 @@
+// Proyecto unico: microservicio de Tarjeta de Credito que integra, en la misma app,
+// los 4 Galaxy Starters (logs, audit, security, observability) y el starter propio
+// andes-api-toolkit (server + client, enfoque API-first con OpenAPI).
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'org.springframework.boot' version '4.1.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'pe.edu.galaxy.training.java.gt'
+version = '1.0.0'
+description = 'Banca - Tarjeta de Credito: proyecto integrado final (Galaxy Starters + andes-api-toolkit)'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    // BOMs: Galaxy Starters (Gradle/Maven Local) + Andes API Toolkit (Maven/Maven Local)
+    implementation platform('pe.edu.galaxy.training.java.bom:oms-starter-bom-core:2.0.0')
+    implementation platform('pe.andes.api:andes-api-bom:1.0.0-SNAPSHOT')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Galaxy Starters (curso Starter Development)
+    implementation 'pe.edu.galaxy.training.java:oms-starter-logs-core'
+    implementation 'pe.edu.galaxy.training.java:oms-starter-audit-core'
+    implementation 'pe.edu.galaxy.training.java:oms-starter-security-core'
+    implementation 'pe.edu.galaxy.training.java:oms-starter-observability-core'
+
+    // Andes API Toolkit (starter propio, curso Java Library Development)
+    implementation 'pe.andes.api:andes-api-common'
+    implementation 'pe.andes.api:andes-api-server-spring-boot-starter'
+    implementation 'pe.andes.api:andes-api-client-spring-boot-starter'
+    implementation 'io.swagger.core.v3:swagger-models:2.2.22'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly 'com.h2database:h2'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.wiremock:wiremock-standalone:3.5.4'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}

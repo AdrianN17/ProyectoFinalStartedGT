@@ -1,0 +1,81 @@
+openapi: 3.0.3
+info:
+  title: Inventory API (External - Client B)
+  description: >
+    Contrato de una segunda API externa (inventario) consumida por el PoC Client,
+    con una estructura de recursos y de paginacion distinta a Client A y al Server,
+    para demostrar el manejo de contratos heterogeneos con infraestructura comun.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8083
+paths:
+  /stock/{sku}:
+    get:
+      operationId: getStockBySku
+      summary: Get current stock level for a SKU
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Stock level
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockLevel'
+        '404':
+          description: SKU not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryFault'
+  /stock/search:
+    get:
+      operationId: searchStock
+      summary: Search stock levels
+      parameters:
+        - name: query
+          in: query
+          schema: { type: string }
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 50 }
+      responses:
+        '200':
+          description: Cursor-paginated stock levels (different pagination style than Server/Client A)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockSearchResult'
+components:
+  schemas:
+    StockLevel:
+      type: object
+      properties:
+        sku: { type: string }
+        warehouse: { type: string }
+        quantityAvailable: { type: integer }
+        lastUpdated: { type: string, format: date-time }
+    StockSearchResult:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockLevel'
+        nextCursor:
+          type: string
+          nullable: true
+    InventoryFault:
+      type: object
+      properties:
+        fault:
+          type: object
+          properties:
+            reason: { type: string }
+            detail: { type: string }

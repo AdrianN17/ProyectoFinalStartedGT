@@ -1,0 +1,81 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /oms
+
+spring:
+  application:
+    name: oms-service-customer
+
+  datasource:
+    url: jdbc:mysql://${DB_SERVICE:localhost}:${DB_PORT:3306}/${DB_NAME:db_oms_customer}?createDatabaseIfNotExist=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:123456}
+
+  jpa:
+    hibernate:
+#      ddl-auto: create
+    show-sql: true
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+
+oms:
+
+  logs:
+    enabled: true
+    service-name: ${spring.application.name:oms-service-customer}
+    trace-header-name: X-Trace-Id
+    correlation-header-name: X-Correlation-Id
+    include-headers: true
+    excluded-paths:
+      - /actuator/health
+      - /swagger-ui
+      - /v3/api-docs
+
+  audit:
+    enabled: true
+    service-name: ${spring.application.name:oms-service-customer}
+    log-request: true
+    log-response: true
+    log-errors: true
+    max-payload-length: 8000
+    kafka:
+      bootstrap-servers: localhost:9092
+      topic-name: topic-audit
+
+  sensitive:
+    enabled: true
+    encrypt:
+      enabled: true
+      provider: VAULT
+      vault:
+        uri: http://localhost:18201
+        token: ${token}
+        transit-key: oms-key
+    mask:
+      enabled: true
+      enabled-by-default: true
+    audit:
+      enabled: true
+  observability:
+    enabled: true
+    service-name: ${spring.application.name:oms-service-customer}
+    business-metrics-enabled: true
+    method-metrics-enabled: true
+    health-enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true

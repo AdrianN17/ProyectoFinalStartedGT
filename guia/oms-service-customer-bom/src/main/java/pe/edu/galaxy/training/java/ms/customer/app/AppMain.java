@@ -1,0 +1,9 @@
+package pe.edu.galaxy.training.java.ms.customer.app;
+
+import java.util.UUID;
+
+public class AppMain {
+    public static void main(String[] args) {
+        System.out.println(UUID.randomUUID().toString());
+    }
+}

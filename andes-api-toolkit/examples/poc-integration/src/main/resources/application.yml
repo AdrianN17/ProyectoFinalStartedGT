@@ -1,0 +1,33 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: poc-integration
+
+andes:
+  api:
+    server:
+      correlation:
+        enabled: true
+      response:
+        # The generated CheckoutsApi controller already returns the full Andes envelope
+        # (CheckoutEnvelope), so auto-wrapping must stay OFF here to avoid double-wrapping.
+        wrap-enabled: false
+      error-handling:
+        enabled: true
+      openapi:
+        enabled: true
+        title: Andes Integration PoC
+        description: Own Checkout API that internally consumes the external Orders API
+        version: 1.0.0
+    client:
+      clients:
+        orders:
+          base-url: http://localhost:8083
+          connect-timeout: 2s
+          read-timeout: 5s
+
+logging:
+  level:
+    pe.andes: DEBUG
