@@ -43,7 +43,7 @@ graph TB
     AIDGEN --> APP
     ATEXT --> APP
 
-    APP -->|topic-audit| SBUS[(Azure Service Bus)]
+    APP -->|queue-audit| SBUS[(Azure Service Bus)]
     APP -->|encrypt/decrypt via clave administrada| AKV[(Azure Key Vault)]
     APP -->|/actuator/prometheus| PROM[(Prometheus)]
     ACLIENT -->|HTTP self-call| FRAUD
@@ -64,7 +64,7 @@ sequenceDiagram
     participant Client as FraudCheckClient (andes-api-client)
     participant Fraud as FraudCheckSimulatorController
     participant DB as H2
-    participant SBus as Azure Service Bus (topic-audit)
+    participant SBus as Azure Service Bus (queue-audit)
 
     C->>F: POST /api/v1/credit-cards/{id}/transactions
     F->>F: TraceId/CorrelationId (MDC)

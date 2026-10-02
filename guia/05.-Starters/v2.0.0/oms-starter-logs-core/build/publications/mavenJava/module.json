@@ -3,7 +3,7 @@
   "component": {
     "group": "pe.edu.galaxy.training.java",
     "module": "oms-starter-logs-core",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -42,13 +42,13 @@
       ],
       "files": [
         {
-          "name": "oms-starter-logs-core-3.0.1-plain.jar",
-          "url": "oms-starter-logs-core-3.0.1-plain.jar",
+          "name": "oms-starter-logs-core-3.0.2-plain.jar",
+          "url": "oms-starter-logs-core-3.0.2-plain.jar",
           "size": 10911,
-          "sha512": "c41967f69d1f10e0faa9d60c2efb468e577202216fc75bd879ae9404d7bf0c0310780021b3117e811de52e806861b57411111cc45d4d5c5b6f8706d46af44630",
-          "sha256": "d902de074c33b378c22b772251bdd365406ab5e362db94178a774f7e0f6b5d76",
-          "sha1": "c29ec62e9583a64ca86dcc8858d7c8ae8fe41ec1",
-          "md5": "f94002c6d17ff8aec050c6a28fb61019"
+          "sha512": "efdf275a43065dee6f76bafd8d69c1cb68d306a01e33b7324ff8dd02c5e9aac2a623599626a0928635f1b7006067f2f3fea61adffa9004d11a16387092895bcd",
+          "sha256": "f2e22b1c43e91e98c85af355ca4de4a8a7f5e8c463383a422488ee2428c7db13",
+          "sha1": "b48fad9f8ea98e042aa8c7b42122994a37a9a6ce",
+          "md5": "c658d260fa5c8f68ce2c5c986ca5f653"
         }
       ]
     },
@@ -80,13 +80,13 @@
       ],
       "files": [
         {
-          "name": "oms-starter-logs-core-3.0.1-plain.jar",
-          "url": "oms-starter-logs-core-3.0.1-plain.jar",
+          "name": "oms-starter-logs-core-3.0.2-plain.jar",
+          "url": "oms-starter-logs-core-3.0.2-plain.jar",
           "size": 10911,
-          "sha512": "c41967f69d1f10e0faa9d60c2efb468e577202216fc75bd879ae9404d7bf0c0310780021b3117e811de52e806861b57411111cc45d4d5c5b6f8706d46af44630",
-          "sha256": "d902de074c33b378c22b772251bdd365406ab5e362db94178a774f7e0f6b5d76",
-          "sha1": "c29ec62e9583a64ca86dcc8858d7c8ae8fe41ec1",
-          "md5": "f94002c6d17ff8aec050c6a28fb61019"
+          "sha512": "efdf275a43065dee6f76bafd8d69c1cb68d306a01e33b7324ff8dd02c5e9aac2a623599626a0928635f1b7006067f2f3fea61adffa9004d11a16387092895bcd",
+          "sha256": "f2e22b1c43e91e98c85af355ca4de4a8a7f5e8c463383a422488ee2428c7db13",
+          "sha1": "b48fad9f8ea98e042aa8c7b42122994a37a9a6ce",
+          "md5": "c658d260fa5c8f68ce2c5c986ca5f653"
         }
       ]
     },
@@ -100,13 +100,13 @@
       },
       "files": [
         {
-          "name": "oms-starter-logs-core-3.0.1-sources.jar",
-          "url": "oms-starter-logs-core-3.0.1-sources.jar",
+          "name": "oms-starter-logs-core-3.0.2-sources.jar",
+          "url": "oms-starter-logs-core-3.0.2-sources.jar",
           "size": 6912,
-          "sha512": "7ccd2bdfca9dcfe6148fb2b02e2b8f5322b5f1fc216b9f64fb3d3c286883300895cf0aa7f4dcb602b7664b2236f9c7c7317fc2aae45981f2d2cd64f69090c092",
-          "sha256": "5c3b4bce551012eaafd175e292f7b19b2cb75b4dc6e598442cb2d15ae5d423bf",
-          "sha1": "05369415921d8acb0e40681303aa7a9ac66549cc",
-          "md5": "e4888b197edea3dc09d58fc766672c34"
+          "sha512": "8f893bd21b2b728a8b8bd7f99f6a8877d5c782e67f7f2c42a7355febac6b6bd9e99bb39d1076443a790d4fc48d0ac46356a47790e162cbb9a4b1e59e4d9efc03",
+          "sha256": "93dfd42c2d78f08ae08cefa7e57a73c4715b6a92354a42783e617725f5f860e1",
+          "sha1": "e0e365e9aba0ed84908a3b9332d4ead0a1165cba",
+          "md5": "6f4f258e7f9a941d248e3ac1824bf650"
         }
       ]
     }

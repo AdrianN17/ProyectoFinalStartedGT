@@ -13,7 +13,7 @@ localmente.
 |---|---|---|---|---|---|---|---|
 | 1 | `oms-starter-bom-core` | 3.0.0 | `pe.edu.galaxy.training.java.bom:oms-starter-bom-core` | BOM (Bill of Materials) que centraliza las versiones de los demas starters | `pom.xml` con `dependencyManagement` | Importarlo como `platform(...)` en cualquier microservicio | Evita conflictos de versiones y estandariza upgrades corporativos |
 | 2 | `oms-starter-logs-core` | 3.0.0 | `pe.edu.galaxy.training.java:oms-starter-logs-core` | Logging estructurado (JSON) con correlacion de trazas | `LogsAutoConfiguration`, `TraceFilter`, `OperationLoggingAspect`, `@LogOperation` | Servicios REST que necesitan trazabilidad extremo a extremo (`X-Trace-Id` / `X-Correlation-Id`) | Logs uniformes y correlacionables entre microservicios sin codigo repetido |
-| 3 | `oms-starter-audit-core` | 3.0.0 | `pe.edu.galaxy.training.java:oms-starter-audit-core` | Auditoria de operaciones de negocio publicada en un topico de **Azure Service Bus** | `AuditAutoConfig`, `ServiceBusAutoConfig`, `AuditAspect`, `@Auditable` | Registrar quien hizo que operacion (CREATE/UPDATE/DELETE) y su resultado | Trazabilidad de negocio y cumplimiento normativo sin acoplar el codigo al productor Service Bus |
+| 3 | `oms-starter-audit-core` | 3.0.0 | `pe.edu.galaxy.training.java:oms-starter-audit-core` | Auditoria de operaciones de negocio publicada en **Azure Service Bus** (en este proyecto se enruta a cola por SKU Basic) | `AuditAutoConfig`, `ServiceBusAutoConfig`, `AuditAspect`, `@Auditable` | Registrar quien hizo que operacion (CREATE/UPDATE/DELETE) y su resultado | Trazabilidad de negocio y cumplimiento normativo sin acoplar el codigo al productor Service Bus |
 | 4 | `oms-starter-security-core` | 3.0.0 | `pe.edu.galaxy.training.java:oms-starter-security-core` | Cifrado (**Azure Key Vault**, operaciones criptograficas sobre clave administrada) y enmascarado de datos sensibles | `SensitiveSecurityAutoConfiguration`, `SensitiveRepositoryAspect`, `@Encrypt`, `@Mask`, `@Sensitive` | Entidades JPA con PII (email, telefono, documento) | Proteccion de datos sensibles en reposo y en las respuestas JSON, de forma declarativa |
 | 5 | `oms-starter-observability-core` | 3.0.0 | `pe.edu.galaxy.training.java:oms-starter-observability-core` | Metricas de negocio, health checks y exposicion Prometheus | `ObservabilityAutoConfiguration`, `ObservedMetricAspect`, `@ObservedMetric`, Actuator | Monitoreo de metodos de negocio y salud del servicio | Observabilidad lista para Grafana/Prometheus sin configurar Micrometer manualmente |
 
@@ -33,11 +33,12 @@ localmente.
 
 ### 3. oms-starter-audit-core
 - **Propiedades**: prefijo `oms.audit` (`enabled`, `log-request`, `log-response`, `log-errors`,
-  `service-bus.connection-string`, `service-bus.topic-name`).
+  `service-bus.connection-string`, `service-bus.topic-name` en el starter; en este proyecto se
+  usa `service-bus.queue-name` para compatibilidad con Service Bus Basic).
 - **Autenticacion**: Service Bus se autentica **solo con connection string** (clave compartida
   SAS); no usa `DefaultAzureCredential`/`az login` (reservado exclusivamente a Key Vault).
 - **Anotacion**: `@Auditable(operation, entity, description)` a nivel de metodo.
-- **Uso**: `CreditCardServiceImpl` -> topico `topic-audit`.
+- **Uso**: `CreditCardServiceImpl` -> cola `queue-audit` mediante `AuditServiceBusQueueConfig`.
 
 ### 4. oms-starter-security-core
 - **Propiedades**: prefijo `oms.sensitive` (`encrypt.enabled`, `encrypt.provider`,

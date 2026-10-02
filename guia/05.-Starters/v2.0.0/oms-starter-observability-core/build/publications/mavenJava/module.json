@@ -3,7 +3,7 @@
   "component": {
     "group": "pe.edu.galaxy.training.java",
     "module": "oms-starter-observability-core",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -47,13 +47,13 @@
       ],
       "files": [
         {
-          "name": "oms-starter-observability-core-3.0.1-plain.jar",
-          "url": "oms-starter-observability-core-3.0.1-plain.jar",
+          "name": "oms-starter-observability-core-3.0.2-plain.jar",
+          "url": "oms-starter-observability-core-3.0.2-plain.jar",
           "size": 11426,
-          "sha512": "874160608ec85b37de6b8ed643329cec406036eb487196f0bad0dcfda4fff951e2d2afcf611d279fd7e8943c7d4543b44b94a11400c64a2059c8d6f847a68f5a",
-          "sha256": "51993cd1961ebda2660e6ecb250e29f8f5c920e2507f8750cd0cadb2da152d2a",
-          "sha1": "48cc226983611e59211562fd19022c905e93f0ac",
-          "md5": "ee3883cfad715a988d9008af3d0ae451"
+          "sha512": "ce2dcb74c6d11663b05c75ad10aabe86c656347529fde977f43f9375ba5c5bd9ebf9d0cbe9e32e41b222a8a82be5232a1df36f7b9d4da6badda1a8d803aacafa",
+          "sha256": "06bcb8f9a07f80175bdfbd026e357d1ba7633cf5fc33f5afc265d57b33b5c4ac",
+          "sha1": "30fa3dfb921be54551710d974d6aacf5b6def0df",
+          "md5": "17662391ac7c9893372f7d745589971e"
         }
       ]
     },
@@ -90,13 +90,13 @@
       ],
       "files": [
         {
-          "name": "oms-starter-observability-core-3.0.1-plain.jar",
-          "url": "oms-starter-observability-core-3.0.1-plain.jar",
+          "name": "oms-starter-observability-core-3.0.2-plain.jar",
+          "url": "oms-starter-observability-core-3.0.2-plain.jar",
           "size": 11426,
-          "sha512": "874160608ec85b37de6b8ed643329cec406036eb487196f0bad0dcfda4fff951e2d2afcf611d279fd7e8943c7d4543b44b94a11400c64a2059c8d6f847a68f5a",
-          "sha256": "51993cd1961ebda2660e6ecb250e29f8f5c920e2507f8750cd0cadb2da152d2a",
-          "sha1": "48cc226983611e59211562fd19022c905e93f0ac",
-          "md5": "ee3883cfad715a988d9008af3d0ae451"
+          "sha512": "ce2dcb74c6d11663b05c75ad10aabe86c656347529fde977f43f9375ba5c5bd9ebf9d0cbe9e32e41b222a8a82be5232a1df36f7b9d4da6badda1a8d803aacafa",
+          "sha256": "06bcb8f9a07f80175bdfbd026e357d1ba7633cf5fc33f5afc265d57b33b5c4ac",
+          "sha1": "30fa3dfb921be54551710d974d6aacf5b6def0df",
+          "md5": "17662391ac7c9893372f7d745589971e"
         }
       ]
     }

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'pe.edu.galaxy.training.java'
-version = '3.0.1'
+version = '3.0.2'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -103,4 +103,3 @@ publishing {
         }
     }
 }
-

@@ -35,10 +35,11 @@ oms:
     log-response: true
     log-errors: true
     service-bus:
-      # Obligatorio: connection string del namespace/topico de Azure Service Bus
+      # Obligatorio: connection string del namespace de Azure Service Bus
       # (clave compartida SAS). No se usa DefaultAzureCredential/az login aqui.
-      connection-string: ${AZURE_SERVICEBUS_CONNECTION_STRING:}
-      topic-name: topic-audit
+      connection-string: ${AZURE_SERVICEBUS_CONNECTION_STRING}
+      # En SKU Basic solo hay colas; el sender custom de la app usara este valor.
+      queue-name: queue-audit
 
   sensitive:
     enabled: true
@@ -49,7 +50,7 @@ oms:
         # Autenticacion via DefaultAzureCredential: en local, ejecutar `az login`
         # previamente con una cuenta/suscripcion con acceso al Key Vault.
         # (algorithm no se especifica: usa el default del starter, RSA-OAEP-256)
-        vault-url: ${AZURE_KEYVAULT_URL:https://CHANGE-ME.vault.azure.net}
+        vault-url: https://azkvadrian1.vault.azure.net/
         key-name: oms-key
     mask:
       enabled: true

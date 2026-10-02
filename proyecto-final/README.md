@@ -59,7 +59,9 @@ propio contrato OpenAPI:
      python3 scripts/mock_fraudcheck_server.py --port 9090
      # y en application.yml: andes.api.client.clients.fraudCheck.base-url=http://localhost:9090
      ```
-- Cada operacion queda auditada en un topico de **Azure Service Bus** (`oms-starter-audit-core`),
+- Cada operacion queda auditada en **Azure Service Bus** (`oms-starter-audit-core`): en este
+  proyecto, cuando el namespace usa SKU **Basic**, se publica en la cola `queue-audit` mediante
+  un sender custom (`AuditServiceBusQueueConfig`) compatible con colas,
   registrada con trazas correlacionadas (`oms-starter-logs-core`), medida con metricas de negocio
   (`oms-starter-observability-core`) y expuesta bajo el envelope estandar `{success, data, error,
   metadata}` con manejo centralizado de errores (`andes-api-server-spring-boot-starter`).
@@ -166,9 +168,9 @@ en tests), y el scoring de fraude usa un simulador interno autocontenido. Para u
 completa contra Azure real:
 
 ```bash
-# Azure Service Bus (oms-starter-audit-core): crear namespace + topico en Azure
-az servicebus namespace create --name <mi-namespace> --resource-group <mi-rg> --sku Standard
-az servicebus topic create --name topic-audit --namespace-name <mi-namespace> --resource-group <mi-rg>
+# Azure Service Bus (oms-starter-audit-core): crear namespace + cola en Azure (SKU Basic)
+az servicebus namespace create --name <mi-namespace> --resource-group <mi-rg> --sku Basic
+az servicebus queue create --name queue-audit --namespace-name <mi-namespace> --resource-group <mi-rg>
 # Luego exportar la connection string (oms.audit.service-bus.connection-string):
 export AZURE_SERVICEBUS_CONNECTION_STRING="Endpoint=sb://<mi-namespace>.servicebus.windows.net/;..."
 
