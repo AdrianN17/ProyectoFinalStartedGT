@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="pe.edu.galaxy.training.java.logs.filter.TraceFilterTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-02T16:44:18.637Z" hostname="adrianf" time="0.241">
+  <properties/>
+  <testcase name="doFilterInternalClearsMdcEvenWhenChainThrows()" classname="pe.edu.galaxy.training.java.logs.filter.TraceFilterTest" time="0.219"/>
+  <testcase name="shouldNotFilterReturnsTrueForExcludedPaths()" classname="pe.edu.galaxy.training.java.logs.filter.TraceFilterTest" time="0.003"/>
+  <testcase name="doFilterInternalReusesIncomingTraceAndCorrelationHeaders()" classname="pe.edu.galaxy.training.java.logs.filter.TraceFilterTest" time="0.003"/>
+  <testcase name="shouldNotFilterReturnsFalseForRegularPaths()" classname="pe.edu.galaxy.training.java.logs.filter.TraceFilterTest" time="0.001"/>
+  <testcase name="doFilterInternalGeneratesTraceIdWhenHeaderMissingAndEchoesItInResponse()" classname="pe.edu.galaxy.training.java.logs.filter.TraceFilterTest" time="0.009"/>
+  <system-out><![CDATA[11:44:18.851 [Test worker] INFO pe.edu.galaxy.training.java.logs.filter.TraceFilter -- HTTP_REQUEST:: method= uri=/api/credit-cards query=null remoteAddress=127.0.0.1
+11:44:18.863 [Test worker] INFO pe.edu.galaxy.training.java.logs.filter.TraceFilter -- HTTP_REQUEST:: method= uri=/api/credit-cards query=null remoteAddress=127.0.0.1
+11:44:18.863 [Test worker] INFO pe.edu.galaxy.training.java.logs.filter.TraceFilter -- HTTP_RESPONSE:: method= uri=/api/credit-cards status=200 elapsedMs=1
+11:44:18.870 [Test worker] INFO pe.edu.galaxy.training.java.logs.filter.TraceFilter -- HTTP_REQUEST:: method= uri=/api/credit-cards query=null remoteAddress=127.0.0.1
+11:44:18.871 [Test worker] INFO pe.edu.galaxy.training.java.logs.filter.TraceFilter -- HTTP_RESPONSE:: method= uri=/api/credit-cards status=200 elapsedMs=1
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

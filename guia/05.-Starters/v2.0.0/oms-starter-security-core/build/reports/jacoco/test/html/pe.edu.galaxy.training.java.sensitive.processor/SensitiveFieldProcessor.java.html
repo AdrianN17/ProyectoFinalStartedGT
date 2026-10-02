@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SensitiveFieldProcessor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">oms-starter-security-core</a> &gt; <a href="index.source.html" class="el_package">pe.edu.galaxy.training.java.sensitive.processor</a> &gt; <span class="el_source">SensitiveFieldProcessor.java</span></div><h1>SensitiveFieldProcessor.java</h1><pre class="source lang-java linenums">package pe.edu.galaxy.training.java.sensitive.processor;
+
+import pe.edu.galaxy.training.java.sensitive.annotation.Encrypt;
+import pe.edu.galaxy.training.java.sensitive.annotation.Mask;
+import pe.edu.galaxy.training.java.sensitive.annotation.Sensitive;
+import pe.edu.galaxy.training.java.sensitive.enums.EncryptionProvider;
+import pe.edu.galaxy.training.java.sensitive.policy.SensitivePolicy;
+import pe.edu.galaxy.training.java.sensitive.properties.SensitiveSecurityProperties;
+import pe.edu.galaxy.training.java.sensitive.service.EncryptService;
+import pe.edu.galaxy.training.java.sensitive.service.SensitiveAuditService;
+
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.temporal.Temporal;
+import java.util.*;
+
+public class SensitiveFieldProcessor {
+
+    private final EncryptService encryptService;
+    private final SensitiveAuditService auditService;
+    private final SensitiveSecurityProperties properties;
+    private final SensitivePolicy sensitivePolicy;
+    public SensitiveFieldProcessor(EncryptService encryptService,
+                                   SensitiveAuditService auditService,
+                                   SensitiveSecurityProperties properties,
+<span class="fc" id="L27">                                   SensitivePolicy sensitivePolicy) {</span>
+<span class="fc" id="L28">        this.encryptService = encryptService;</span>
+<span class="fc" id="L29">        this.auditService = auditService;</span>
+<span class="fc" id="L30">        this.properties = properties;</span>
+<span class="fc" id="L31">        this.sensitivePolicy = sensitivePolicy;</span>
+<span class="fc" id="L32">    }</span>
+
+    public void encryptObject(Object target) {
+<span class="fc" id="L35">        process(target, true);</span>
+<span class="fc" id="L36">    }</span>
+
+    public void decryptObject(Object target) {
+<span class="fc" id="L39">        process(target, false);</span>
+<span class="fc" id="L40">    }</span>
+
+    public void decryptResult(Object result) {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (result == null) {</span>
+<span class="fc" id="L44">            return;</span>
+        }
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (result instanceof Optional&lt;?&gt; optional) {</span>
+<span class="fc" id="L48">            optional.ifPresent(this::decryptObject);</span>
+<span class="fc" id="L49">            return;</span>
+        }
+
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">        if (result instanceof Iterable&lt;?&gt; iterable) {</span>
+<span class="fc" id="L53">            iterable.forEach(this::decryptObject);</span>
+<span class="fc" id="L54">            return;</span>
+        }
+
+<span class="nc" id="L57">        decryptObject(result);</span>
+<span class="nc" id="L58">    }</span>
+
+    private void process(Object target, boolean encryptMode) {
+<span class="pc bpc" id="L61" title="1 of 4 branches missed.">        if (target == null || !properties.getEncrypt().isEnabled()) {</span>
+<span class="fc" id="L62">            return;</span>
+        }
+
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        for (Field field : target.getClass().getDeclaredFields()) {</span>
+<span class="fc" id="L66">            Encrypt encrypt = field.getAnnotation(Encrypt.class);</span>
+<span class="fc" id="L67">            Sensitive sensitive = field.getAnnotation(Sensitive.class);</span>
+
+<span class="pc bpc" id="L69" title="1 of 6 branches missed.">            if (sensitive != null &amp;&amp; properties.getAudit().isEnabled() &amp;&amp; !encryptMode) {</span>
+<span class="fc" id="L70">                auditService.fieldAccessed(target.getClass().getName(), field.getName(), sensitive);</span>
+            }
+
+<span class="pc bpc" id="L73" title="1 of 4 branches missed.">            if (encrypt == null || !String.class.equals(field.getType())) {</span>
+<span class="nc" id="L74">                continue;</span>
+            }
+
+            try {
+<span class="fc" id="L78">                field.setAccessible(true);</span>
+<span class="fc" id="L79">                String value = (String) field.get(target);</span>
+
+<span class="pc bpc" id="L81" title="1 of 4 branches missed.">                if (value == null || value.isBlank()) {</span>
+<span class="fc" id="L82">                    continue;</span>
+                }
+
+<span class="fc" id="L85">                EncryptionProvider provider = encrypt.provider();</span>
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">                if (EncryptionProvider.NONE.equals(provider)) {</span>
+<span class="fc" id="L88">                    continue;</span>
+                }
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">                if (!encryptService.supports(provider)) {</span>
+<span class="fc" id="L92">                    throw new IllegalStateException(&quot;Unsupported encryption provider: &quot; + provider);</span>
+                }
+
+<span class="fc bfc" id="L95" title="All 2 branches covered.">                String newValue = encryptMode</span>
+<span class="fc" id="L96">                        ? encryptService.encrypt(value)</span>
+<span class="fc" id="L97">                        : encryptService.decrypt(value);</span>
+
+<span class="fc" id="L99">                field.set(target, newValue);</span>
+<span class="nc" id="L100">            } catch (IllegalAccessException ex) {</span>
+<span class="nc" id="L101">                throw new IllegalStateException(&quot;Error processing field: &quot; + field.getName(), ex);</span>
+<span class="fc" id="L102">            }</span>
+        }
+<span class="fc" id="L104">    }</span>
+
+    public Object sanitizeForAudit(Object target) {
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (target == null) {</span>
+<span class="fc" id="L109">            return null;</span>
+        }
+
+<span class="fc" id="L112">        Class&lt;?&gt; type = target.getClass();</span>
+
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (isSimpleType(type)) {</span>
+<span class="fc" id="L115">            return target;</span>
+        }
+
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (target instanceof Iterable&lt;?&gt; iterable) {</span>
+<span class="fc" id="L119">            List&lt;Object&gt; sanitizedList = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">            for (Object item : iterable) {</span>
+<span class="fc" id="L122">                sanitizedList.add(sanitizeForAudit(item));</span>
+<span class="fc" id="L123">            }</span>
+
+<span class="fc" id="L125">            return sanitizedList;</span>
+        }
+
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (target instanceof Map&lt;?, ?&gt; map) {</span>
+<span class="nc" id="L129">            Map&lt;Object, Object&gt; sanitizedMap = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="nc" id="L131">            map.forEach((key, value) -&gt;</span>
+<span class="nc" id="L132">                    sanitizedMap.put(key, sanitizeForAudit(value)));</span>
+
+<span class="nc" id="L134">            return sanitizedMap;</span>
+        }
+
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">        if (!isAuditCandidate(type)) {</span>
+<span class="nc" id="L138">            return target;</span>
+        }
+
+<span class="fc" id="L141">        Map&lt;String, Object&gt; payload = new LinkedHashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        for (Field field : type.getDeclaredFields()) {</span>
+            try {
+<span class="fc" id="L145">                field.setAccessible(true);</span>
+
+<span class="fc" id="L147">                Object value = field.get(target);</span>
+
+<span class="fc" id="L149">                Sensitive sensitive = field.getAnnotation(Sensitive.class);</span>
+<span class="fc" id="L150">                Mask mask = field.getAnnotation(Mask.class);</span>
+
+<span class="pc bpc" id="L152" title="1 of 4 branches missed.">                if (sensitive != null &amp;&amp; properties.getAudit().isEnabled()) {</span>
+<span class="fc" id="L153">                    Object sanitized = sensitivePolicy.apply(</span>
+                            value,
+<span class="fc" id="L155">                            sensitive.level(),</span>
+                            mask
+                    );
+
+<span class="fc" id="L159">                    payload.put(field.getName(), sanitized);</span>
+<span class="fc" id="L160">                } else {</span>
+<span class="fc" id="L161">                    payload.put(field.getName(), sanitizeForAudit(value));</span>
+                }
+
+<span class="nc" id="L164">            } catch (IllegalAccessException ex) {</span>
+<span class="nc" id="L165">                throw new IllegalStateException(</span>
+<span class="nc" id="L166">                        &quot;Error sanitizing field: &quot; + field.getName(), ex);</span>
+<span class="fc" id="L167">            }</span>
+        }
+
+<span class="fc" id="L170">        return payload;</span>
+    }
+    private boolean isSimpleType(Class&lt;?&gt; type) {
+
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">        return type.isPrimitive()</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">                || String.class.equals(type)</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">                || Boolean.class.equals(type)</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">                || Character.class.equals(type)</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">                || Number.class.isAssignableFrom(type)</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">                || BigDecimal.class.equals(type)</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">                || BigInteger.class.equals(type)</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">                || UUID.class.equals(type)</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">                || Date.class.isAssignableFrom(type)</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">                || Temporal.class.isAssignableFrom(type)</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">                || Enum.class.isAssignableFrom(type);</span>
+    }
+
+    private boolean isAuditCandidate(Class&lt;?&gt; type) {
+
+<span class="fc" id="L189">        String packageName = type.getPackageName();</span>
+
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        return !packageName.startsWith(&quot;java.&quot;)</span>
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">                &amp;&amp; !packageName.startsWith(&quot;javax.&quot;)</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">                &amp;&amp; !packageName.startsWith(&quot;jakarta.&quot;)</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">                &amp;&amp; !packageName.startsWith(&quot;org.springframework.&quot;)</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">                &amp;&amp; !packageName.startsWith(&quot;com.fasterxml.&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KeyVaultEncryptServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">oms-starter-security-core</a> &gt; <a href="index.source.html" class="el_package">pe.edu.galaxy.training.java.sensitive.service.impl</a> &gt; <span class="el_source">KeyVaultEncryptServiceImpl.java</span></div><h1>KeyVaultEncryptServiceImpl.java</h1><pre class="source lang-java linenums">package pe.edu.galaxy.training.java.sensitive.service.impl;
+
+import com.azure.security.keyvault.keys.cryptography.CryptographyClient;
+import com.azure.security.keyvault.keys.cryptography.models.DecryptResult;
+import com.azure.security.keyvault.keys.cryptography.models.EncryptResult;
+import com.azure.security.keyvault.keys.cryptography.models.EncryptionAlgorithm;
+import pe.edu.galaxy.training.java.sensitive.enums.EncryptionProvider;
+import pe.edu.galaxy.training.java.sensitive.properties.SensitiveSecurityProperties;
+import pe.edu.galaxy.training.java.sensitive.service.EncryptService;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+/**
+ * Implementacion de {@link EncryptService} que delega el cifrado/descifrado
+ * en Azure Key Vault (operaciones criptograficas sobre una clave administrada),
+ * en reemplazo del motor Transit de HashiCorp Vault usado previamente.
+ */
+public class KeyVaultEncryptServiceImpl implements EncryptService {
+
+    private static final String PREFIX = &quot;akv:&quot;;
+
+    private final CryptographyClient cryptographyClient;
+    private final SensitiveSecurityProperties properties;
+
+    public KeyVaultEncryptServiceImpl(CryptographyClient cryptographyClient,
+<span class="nc" id="L27">                                       SensitiveSecurityProperties properties) {</span>
+<span class="nc" id="L28">        this.cryptographyClient = cryptographyClient;</span>
+<span class="nc" id="L29">        this.properties = properties;</span>
+<span class="nc" id="L30">    }</span>
+
+    @Override
+    public String encrypt(String plainText) {
+<span class="nc bnc" id="L34" title="All 4 branches missed.">        if (plainText == null || plainText.isBlank()) {</span>
+<span class="nc" id="L35">            return plainText;</span>
+        }
+
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        if (plainText.startsWith(PREFIX)) {</span>
+<span class="nc" id="L39">            return plainText;</span>
+        }
+
+<span class="nc" id="L42">        EncryptionAlgorithm algorithm = algorithm();</span>
+
+<span class="nc" id="L44">        EncryptResult result = cryptographyClient.encrypt(</span>
+                algorithm,
+<span class="nc" id="L46">                plainText.getBytes(StandardCharsets.UTF_8));</span>
+
+<span class="nc" id="L48">        String cipherText = Base64.getEncoder().encodeToString(result.getCipherText());</span>
+
+<span class="nc" id="L50">        return PREFIX + cipherText;</span>
+    }
+
+    @Override
+    public String decrypt(String cipherText) {
+<span class="nc bnc" id="L55" title="All 4 branches missed.">        if (cipherText == null || cipherText.isBlank()) {</span>
+<span class="nc" id="L56">            return cipherText;</span>
+        }
+
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (!cipherText.startsWith(PREFIX)) {</span>
+<span class="nc" id="L60">            return cipherText;</span>
+        }
+
+<span class="nc" id="L63">        byte[] rawCipherText = Base64.getDecoder().decode(cipherText.substring(PREFIX.length()));</span>
+
+<span class="nc" id="L65">        DecryptResult result = cryptographyClient.decrypt(algorithm(), rawCipherText);</span>
+
+<span class="nc" id="L67">        return new String(result.getPlainText(), StandardCharsets.UTF_8);</span>
+    }
+
+    @Override
+    public boolean supports(EncryptionProvider provider) {
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        return EncryptionProvider.AZURE_KEY_VAULT.equals(provider)</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">                || EncryptionProvider.DEFAULT.equals(provider);</span>
+    }
+
+    private EncryptionAlgorithm algorithm() {
+<span class="nc" id="L77">        return EncryptionAlgorithm.fromString(</span>
+<span class="nc" id="L78">                properties.getEncrypt().getAzureKeyVault().getAlgorithm());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

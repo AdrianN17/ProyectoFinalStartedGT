@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NoOpEncryptServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">oms-starter-security-core</a> &gt; <a href="index.source.html" class="el_package">pe.edu.galaxy.training.java.sensitive.service.impl</a> &gt; <span class="el_source">NoOpEncryptServiceImpl.java</span></div><h1>NoOpEncryptServiceImpl.java</h1><pre class="source lang-java linenums">package pe.edu.galaxy.training.java.sensitive.service.impl;
+
+import pe.edu.galaxy.training.java.sensitive.enums.EncryptionProvider;
+import pe.edu.galaxy.training.java.sensitive.service.EncryptService;
+
+/**
+ * Implementacion de respaldo usada cuando {@code oms.sensitive.encrypt.enabled=false}.
+ *
+ * &lt;p&gt;Evita construir un {@code CryptographyClient}/conexion a Azure Key Vault
+ * (que valida la conexion de forma eager) cuando el cifrado esta deshabilitado,
+ * por ejemplo en entornos de pruebas sin credenciales de {@code az login}.
+ * {@link pe.edu.galaxy.training.java.sensitive.processor.SensitiveFieldProcessor}
+ * ya evita invocar el cifrado cuando {@code encrypt.enabled=false}, por lo que
+ * estos metodos no deberian ejecutarse en ese escenario; se dejan como
+ * no-operacion (devuelven el valor tal cual) a modo defensivo.&lt;/p&gt;
+ */
+<span class="fc" id="L17">public class NoOpEncryptServiceImpl implements EncryptService {</span>
+
+    @Override
+    public String encrypt(String plainText) {
+<span class="fc" id="L21">        return plainText;</span>
+    }
+
+    @Override
+    public String decrypt(String cipherText) {
+<span class="fc" id="L26">        return cipherText;</span>
+    }
+
+    @Override
+    public boolean supports(EncryptionProvider provider) {
+<span class="fc" id="L31">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="pe.edu.galaxy.training.java.logs.util.TraceIdGeneratorTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-02T16:44:18.881Z" hostname="adrianf" time="0.013">
+  <properties/>
+  <testcase name="generateReturnsValidUuid()" classname="pe.edu.galaxy.training.java.logs.util.TraceIdGeneratorTest" time="0.007"/>
+  <testcase name="generateReturnsNonBlankValue()" classname="pe.edu.galaxy.training.java.logs.util.TraceIdGeneratorTest" time="0.001"/>
+  <testcase name="generateReturnsUniqueValuesOnEachCall()" classname="pe.edu.galaxy.training.java.logs.util.TraceIdGeneratorTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

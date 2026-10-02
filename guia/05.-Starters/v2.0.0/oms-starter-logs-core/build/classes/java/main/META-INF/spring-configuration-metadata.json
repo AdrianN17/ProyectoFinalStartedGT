@@ -1,0 +1,68 @@
+{
+  "groups": [
+    {
+      "name": "oms.logs",
+      "type": "pe.edu.galaxy.training.java.logs.properties.LogsProperties",
+      "sourceType": "pe.edu.galaxy.training.java.logs.properties.LogsProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "oms.logs.correlation-header-name",
+      "type": "java.lang.String",
+      "sourceType": "pe.edu.galaxy.training.java.logs.properties.LogsProperties",
+      "defaultValue": "X-Correlation-Id"
+    },
+    {
+      "name": "oms.logs.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "pe.edu.galaxy.training.java.logs.properties.LogsProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "oms.logs.excluded-paths",
+      "type": "java.lang.String[]",
+      "sourceType": "pe.edu.galaxy.training.java.logs.properties.LogsProperties",
+      "defaultValue": [
+        "\/actuator\/health",
+        "\/actuator\/prometheus",
+        "\/swagger-ui",
+        "\/v3\/api-docs"
+      ]
+    },
+    {
+      "name": "oms.logs.include-headers",
+      "type": "java.lang.Boolean",
+      "sourceType": "pe.edu.galaxy.training.java.logs.properties.LogsProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "oms.logs.log-request-body",
+      "type": "java.lang.Boolean",
+      "sourceType": "pe.edu.galaxy.training.java.logs.properties.LogsProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "oms.logs.log-response-body",
+      "type": "java.lang.Boolean",
+      "sourceType": "pe.edu.galaxy.training.java.logs.properties.LogsProperties",
+      "defaultValue": false
+    },
+    {
+      "name": "oms.logs.service-name",
+      "type": "java.lang.String",
+      "sourceType": "pe.edu.galaxy.training.java.logs.properties.LogsProperties",
+      "defaultValue": "unknown-service"
+    },
+    {
+      "name": "oms.logs.trace-header-name",
+      "type": "java.lang.String",
+      "sourceType": "pe.edu.galaxy.training.java.logs.properties.LogsProperties",
+      "defaultValue": "X-Trace-Id"
+    }
+  ],
+  "hints": [],
+  "ignored": {
+    "properties": []
+  }
+}

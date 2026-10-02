@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SensitiveSecurityAutoConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">oms-starter-security-core</a> &gt; <a href="index.source.html" class="el_package">pe.edu.galaxy.training.java.sensitive.config</a> &gt; <span class="el_source">SensitiveSecurityAutoConfiguration.java</span></div><h1>SensitiveSecurityAutoConfiguration.java</h1><pre class="source lang-java linenums">package pe.edu.galaxy.training.java.sensitive.config;
+
+import com.azure.core.credential.TokenCredential;
+import com.azure.identity.DefaultAzureCredentialBuilder;
+import com.azure.security.keyvault.keys.KeyClient;
+import com.azure.security.keyvault.keys.KeyClientBuilder;
+import com.azure.security.keyvault.keys.models.KeyVaultKey;
+import com.azure.security.keyvault.keys.cryptography.CryptographyClient;
+import com.azure.security.keyvault.keys.cryptography.CryptographyClientBuilder;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.jackson2.autoconfigure.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import pe.edu.galaxy.training.java.audit.sanitizer.AuditPayloadSanitizer;
+import pe.edu.galaxy.training.java.sensitive.aspect.SensitiveRepositoryAspect;
+import pe.edu.galaxy.training.java.sensitive.jackson.SensitiveBeanSerializerModifier;
+import pe.edu.galaxy.training.java.sensitive.policy.DefaultSensitivePolicy;
+import pe.edu.galaxy.training.java.sensitive.policy.SensitivePolicy;
+import pe.edu.galaxy.training.java.sensitive.processor.SensitiveFieldProcessor;
+import pe.edu.galaxy.training.java.sensitive.properties.SensitiveSecurityProperties;
+import pe.edu.galaxy.training.java.sensitive.sanitizer.SensitiveAuditPayloadSanitizer;
+import pe.edu.galaxy.training.java.sensitive.service.EncryptService;
+import pe.edu.galaxy.training.java.sensitive.service.MaskService;
+import pe.edu.galaxy.training.java.sensitive.service.SensitiveAuditService;
+import pe.edu.galaxy.training.java.sensitive.service.impl.DefaultMaskService;
+import pe.edu.galaxy.training.java.sensitive.service.impl.KeyVaultEncryptServiceImpl;
+import pe.edu.galaxy.training.java.sensitive.service.impl.LoggingSensitiveAuditService;
+import pe.edu.galaxy.training.java.sensitive.service.impl.NoOpEncryptServiceImpl;
+
+@AutoConfiguration
+@EnableConfigurationProperties(SensitiveSecurityProperties.class)
+@ConditionalOnProperty(
+        prefix = &quot;oms.sensitive&quot;,
+        name = &quot;enabled&quot;,
+        havingValue = &quot;true&quot;,
+        matchIfMissing = true
+)
+<span class="nc" id="L46">public class SensitiveSecurityAutoConfiguration {</span>
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TokenCredential azureKeyVaultCredential() {
+<span class="nc" id="L51">        return new DefaultAzureCredentialBuilder().build();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnClass(CryptographyClient.class)
+    @ConditionalOnProperty(prefix = &quot;oms.sensitive.encrypt&quot;, name = &quot;enabled&quot;, havingValue = &quot;true&quot;, matchIfMissing = true)
+    public CryptographyClient cryptographyClient(SensitiveSecurityProperties properties,
+                                                  TokenCredential azureKeyVaultCredential) {
+
+<span class="nc" id="L61">        SensitiveSecurityProperties.AzureKeyVault keyVaultProperties = properties.getEncrypt().getAzureKeyVault();</span>
+
+<span class="nc" id="L63">        KeyClient keyClient = new KeyClientBuilder()</span>
+<span class="nc" id="L64">                .vaultUrl(keyVaultProperties.getVaultUrl())</span>
+<span class="nc" id="L65">                .credential(azureKeyVaultCredential)</span>
+<span class="nc" id="L66">                .buildClient();</span>
+
+<span class="nc bnc" id="L68" title="All 4 branches missed.">        KeyVaultKey key = keyVaultProperties.getKeyVersion() != null &amp;&amp; !keyVaultProperties.getKeyVersion().isBlank()</span>
+<span class="nc" id="L69">                ? keyClient.getKey(keyVaultProperties.getKeyName(), keyVaultProperties.getKeyVersion())</span>
+<span class="nc" id="L70">                : keyClient.getKey(keyVaultProperties.getKeyName());</span>
+
+<span class="nc" id="L72">        return new CryptographyClientBuilder()</span>
+<span class="nc" id="L73">                .keyIdentifier(key.getId())</span>
+<span class="nc" id="L74">                .credential(azureKeyVaultCredential)</span>
+<span class="nc" id="L75">                .buildClient();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnBean(CryptographyClient.class)
+    public EncryptService encryptService(CryptographyClient cryptographyClient,
+                                         SensitiveSecurityProperties properties) {
+<span class="nc" id="L83">        return new KeyVaultEncryptServiceImpl(cryptographyClient, properties);</span>
+    }
+
+    /**
+     * Respaldo activo cuando {@code oms.sensitive.encrypt.enabled=false} (o no hay
+     * {@code CryptographyClient} disponible): evita construir una conexion eager
+     * a Azure Key Vault en escenarios donde el cifrado esta deshabilitado
+     * (p.ej. pruebas sin credenciales de {@code az login}).
+     */
+    @Bean
+    @ConditionalOnMissingBean(EncryptService.class)
+    public EncryptService noOpEncryptService() {
+<span class="nc" id="L95">        return new NoOpEncryptServiceImpl();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MaskService maskService() {
+<span class="nc" id="L101">        return new DefaultMaskService();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SensitiveAuditService sensitiveAuditService() {
+<span class="nc" id="L107">        return new LoggingSensitiveAuditService();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SensitiveFieldProcessor sensitiveFieldProcessor(
+            EncryptService encryptService,
+            SensitiveAuditService auditService,
+            SensitiveSecurityProperties properties,
+            SensitivePolicy sensitivePolicy) {
+
+<span class="nc" id="L118">        return new SensitiveFieldProcessor(</span>
+                encryptService,
+                auditService,
+                properties,
+                sensitivePolicy
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SensitiveRepositoryAspect sensitiveRepositoryAspect(SensitiveFieldProcessor processor) {
+<span class="nc" id="L129">        return new SensitiveRepositoryAspect(processor);</span>
+    }
+
+    @Bean
+    public Module sensitiveJacksonModule(MaskService maskService,
+                                         SensitiveSecurityProperties properties) {
+<span class="nc" id="L135">        SimpleModule module = new SimpleModule(&quot;sensitive-security-module&quot;);</span>
+<span class="nc" id="L136">        module.setSerializerModifier(new SensitiveBeanSerializerModifier(maskService, properties));</span>
+<span class="nc" id="L137">        return module;</span>
+    }
+
+    @Bean
+    public Jackson2ObjectMapperBuilderCustomizer sensitiveJacksonCustomizer(
+            @Qualifier(&quot;sensitiveJacksonModule&quot;) Module sensitiveJacksonModule) {
+
+<span class="nc" id="L144">        return builder -&gt; builder.modules(sensitiveJacksonModule);</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SensitivePolicy sensitivePolicy(
+            MaskService maskService) {
+
+<span class="nc" id="L152">        return new DefaultSensitivePolicy(maskService);</span>
+    }
+    @Bean
+    @Primary
+    public AuditPayloadSanitizer sensitiveAuditPayloadSanitizer(
+            SensitiveFieldProcessor processor) {
+
+<span class="nc" id="L159">        return new SensitiveAuditPayloadSanitizer(processor);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
