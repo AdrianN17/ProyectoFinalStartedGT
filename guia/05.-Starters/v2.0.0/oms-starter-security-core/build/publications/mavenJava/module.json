@@ -1,0 +1,135 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "pe.edu.galaxy.training.java",
+    "module": "oms-starter-security-core",
+    "version": "3.0.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-autoconfigure"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-aspectj"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-json"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-jackson2"
+        },
+        {
+          "group": "jakarta.persistence",
+          "module": "jakarta.persistence-api"
+        },
+        {
+          "group": "com.azure",
+          "module": "azure-identity"
+        },
+        {
+          "group": "com.azure",
+          "module": "azure-security-keyvault-keys"
+        },
+        {
+          "group": "com.azure.spring",
+          "module": "spring-cloud-azure-starter-keyvault-secrets"
+        }
+      ],
+      "files": [
+        {
+          "name": "oms-starter-security-core-3.0.1-plain.jar",
+          "url": "oms-starter-security-core-3.0.1-plain.jar",
+          "size": 35321,
+          "sha512": "56be7b8246f9d0c883282f95d17e29bc808efc9bb17a9864202776983d213533ab91496a8a10400d5e106e3a38d85002ba4bc56c7bc4141f87dcc038a5ebc6ea",
+          "sha256": "aa0e8992ee67324ac1cfaaf58ca6d64275b2e4a5a6dfa6a1dcea4870db22a5ed",
+          "sha1": "e6767e57ff4a9960d3bd8a187edc25a509f2797c",
+          "md5": "30c19b52eccb482dc842cc79d78ec0ff"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "pe.edu.galaxy.training.java",
+          "module": "oms-starter-audit-core",
+          "version": {
+            "requires": "3.0.1"
+          }
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-autoconfigure"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-aspectj"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-json"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-jackson2"
+        },
+        {
+          "group": "jakarta.persistence",
+          "module": "jakarta.persistence-api"
+        },
+        {
+          "group": "com.azure",
+          "module": "azure-identity"
+        },
+        {
+          "group": "com.azure",
+          "module": "azure-security-keyvault-keys"
+        },
+        {
+          "group": "com.azure.spring",
+          "module": "spring-cloud-azure-starter-keyvault-secrets"
+        }
+      ],
+      "files": [
+        {
+          "name": "oms-starter-security-core-3.0.1-plain.jar",
+          "url": "oms-starter-security-core-3.0.1-plain.jar",
+          "size": 35321,
+          "sha512": "56be7b8246f9d0c883282f95d17e29bc808efc9bb17a9864202776983d213533ab91496a8a10400d5e106e3a38d85002ba4bc56c7bc4141f87dcc038a5ebc6ea",
+          "sha256": "aa0e8992ee67324ac1cfaaf58ca6d64275b2e4a5a6dfa6a1dcea4870db22a5ed",
+          "sha1": "e6767e57ff4a9960d3bd8a187edc25a509f2797c",
+          "md5": "30c19b52eccb482dc842cc79d78ec0ff"
+        }
+      ]
+    }
+  ]
+}

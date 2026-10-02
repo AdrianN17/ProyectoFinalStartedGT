@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CreditCardServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bank-creditcard-service</a> &gt; <a href="index.source.html" class="el_package">pe.edu.galaxy.training.java.gt.creditcard.service.impl</a> &gt; <span class="el_source">CreditCardServiceImpl.java</span></div><h1>CreditCardServiceImpl.java</h1><pre class="source lang-java linenums">package pe.edu.galaxy.training.java.gt.creditcard.service.impl;
+
+import static pe.edu.galaxy.training.java.gt.creditcard.commons.CreditCardConstants.BUSINESS_KEY_CARD;
+import static pe.edu.galaxy.training.java.gt.creditcard.commons.CreditCardConstants.BUSINESS_KEY_TRANSACTION;
+import static pe.edu.galaxy.training.java.gt.creditcard.commons.CreditCardConstants.FRAUD_REJECT_THRESHOLD;
+import static pe.edu.galaxy.training.java.gt.creditcard.commons.CreditCardConstants.STATUS_ACTIVE;
+import static pe.edu.galaxy.training.java.gt.creditcard.commons.CreditCardConstants.STATUS_CANCELLED;
+import static pe.edu.galaxy.training.java.gt.creditcard.commons.CreditCardConstants.TX_APPROVED;
+import static pe.edu.galaxy.training.java.gt.creditcard.commons.CreditCardConstants.TX_REJECTED;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import pe.andes.api.common.exception.AndesConflictException;
+import pe.andes.api.common.exception.AndesNotFoundException;
+import pe.andes.api.common.exception.AndesValidationException;
+import pe.andes.lib.id.ChecksumUtils;
+import pe.andes.lib.id.autoconfigure.IdGeneratorService;
+import pe.andes.lib.text.MaskUtils;
+import pe.andes.lib.text.SlugUtils;
+import pe.edu.galaxy.training.java.audit.annotation.Auditable;
+import pe.edu.galaxy.training.java.gt.creditcard.dto.CardStatusUpdateRequest;
+import pe.edu.galaxy.training.java.gt.creditcard.dto.CreditCardResponse;
+import pe.edu.galaxy.training.java.gt.creditcard.dto.IssueCardRequest;
+import pe.edu.galaxy.training.java.gt.creditcard.dto.TransactionRequest;
+import pe.edu.galaxy.training.java.gt.creditcard.dto.TransactionResponse;
+import pe.edu.galaxy.training.java.gt.creditcard.entity.CreditCardEntity;
+import pe.edu.galaxy.training.java.gt.creditcard.entity.CreditCardTransactionEntity;
+import pe.edu.galaxy.training.java.gt.creditcard.fraud.FraudCheckClient;
+import pe.edu.galaxy.training.java.gt.creditcard.fraud.generated.FraudCheckRequest;
+import pe.edu.galaxy.training.java.gt.creditcard.fraud.generated.FraudCheckResponse;
+import pe.edu.galaxy.training.java.gt.creditcard.mapper.CreditCardMapper;
+import pe.edu.galaxy.training.java.gt.creditcard.mapper.TransactionMapper;
+import pe.edu.galaxy.training.java.gt.creditcard.repository.CreditCardRepository;
+import pe.edu.galaxy.training.java.gt.creditcard.repository.CreditCardTransactionRepository;
+import pe.edu.galaxy.training.java.gt.creditcard.service.CreditCardService;
+import pe.edu.galaxy.training.java.logs.annotation.LogOperation;
+import pe.edu.galaxy.training.java.observability.annotation.ObservedMetric;
+
+/**
+ * Cada operacion de negocio combina los 4 Galaxy Starters (metricas, auditoria, logging
+ * estructurado; el cifrado/enmascarado de numero de tarjeta y CVV se aplica de forma transparente
+ * en el repositorio JPA) y, para autorizar una transaccion, el starter propio andes-api-client
+ * (llamada al servicio de scoring de fraude) junto con las excepciones de andes-api-common, que
+ * andes-api-server traduce automaticamente al envelope de error estandar.
+ *
+ * &lt;p&gt;Tambien usa el resto del toolkit Andes API, cada uno en su forma recomendada:&lt;/p&gt;
+ * &lt;ul&gt;
+ *   &lt;li&gt;{@link IdGeneratorService} (andes-id-generator-spring-boot-starter, bean Spring) para el
+ *       {@code referenceId} (ULID &quot;TXN-...&quot;) de cada transaccion.&lt;/li&gt;
+ *   &lt;li&gt;{@link ChecksumUtils} (andes-id-generator, libreria clasica sin Spring, metodo
+ *       {@code static}) para la clave de idempotencia de la transaccion.&lt;/li&gt;
+ *   &lt;li&gt;{@link SlugUtils} y {@link MaskUtils} (andes-text-utils, clasica sin Spring) para
+ *       normalizar el nombre del comercio y enmascarar el numero de tarjeta en el log de
+ *       auditoria tecnica (distinto de {@code @Mask}, que enmascara el JSON de respuesta).&lt;/li&gt;
+ * &lt;/ul&gt;
+ */
+<span class="fc" id="L61">@Slf4j</span>
+@Service
+@RequiredArgsConstructor
+public class CreditCardServiceImpl implements CreditCardService {
+
+    private final CreditCardRepository creditCardRepository;
+    private final CreditCardTransactionRepository transactionRepository;
+    private final FraudCheckClient fraudCheckClient;
+    private final IdGeneratorService idGeneratorService;
+
+    @ObservedMetric(name = &quot;creditcard.issue&quot;, description = &quot;Credit card issuance&quot;, operation = &quot;CARD_ISSUE&quot;)
+    @Auditable(operation = &quot;CREATE&quot;, entity = BUSINESS_KEY_CARD, description = &quot;Issue credit card&quot;)
+    @LogOperation(value = &quot;CARD_ISSUE&quot;, businessKey = BUSINESS_KEY_CARD)
+    @Override
+    public CreditCardResponse issueCard(IssueCardRequest request) {
+<span class="fc" id="L76">        CreditCardEntity entity = CreditCardMapper.toEntity(request);</span>
+<span class="fc" id="L77">        return CreditCardMapper.toResponse(creditCardRepository.save(entity));</span>
+    }
+
+    @Auditable(operation = &quot;FIND_BY_ID&quot;, entity = BUSINESS_KEY_CARD, description = &quot;Find credit card by id&quot;)
+    @Override
+    public CreditCardResponse findById(Long cardId) {
+<span class="nc" id="L83">        return CreditCardMapper.toResponse(findCardOrThrow(cardId));</span>
+    }
+
+    @ObservedMetric(name = &quot;creditcard.updateStatus&quot;, description = &quot;Credit card status update&quot;, operation = &quot;CARD_UPDATE_STATUS&quot;)
+    @Auditable(operation = &quot;UPDATE_STATUS&quot;, entity = BUSINESS_KEY_CARD, description = &quot;Credit card status update&quot;)
+    @LogOperation(value = &quot;CARD_UPDATE_STATUS&quot;, businessKey = BUSINESS_KEY_CARD)
+    @Override
+    public CreditCardResponse updateStatus(Long cardId, CardStatusUpdateRequest request) {
+<span class="fc" id="L91">        CreditCardEntity entity = findCardOrThrow(cardId);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (STATUS_CANCELLED.equals(entity.getStatus())) {</span>
+<span class="fc" id="L93">            throw new AndesConflictException(&quot;Credit card is already CANCELLED: &quot; + cardId);</span>
+        }
+<span class="fc" id="L95">        entity.setStatus(request.status());</span>
+<span class="fc" id="L96">        return CreditCardMapper.toResponse(creditCardRepository.save(entity));</span>
+    }
+
+    @ObservedMetric(name = &quot;creditcard.transaction.authorize&quot;, description = &quot;Transaction authorization&quot;, operation = &quot;TRANSACTION_AUTHORIZE&quot;)
+    @Auditable(operation = &quot;AUTHORIZE&quot;, entity = BUSINESS_KEY_TRANSACTION, description = &quot;Authorize credit card transaction&quot;)
+    @LogOperation(value = &quot;TRANSACTION_AUTHORIZE&quot;, businessKey = BUSINESS_KEY_TRANSACTION)
+    @Override
+    public TransactionResponse authorizeTransaction(Long cardId, TransactionRequest request) {
+<span class="fc" id="L104">        CreditCardEntity card = findCardOrThrow(cardId);</span>
+
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (!STATUS_ACTIVE.equals(card.getStatus())) {</span>
+<span class="fc" id="L107">            throw new AndesConflictException(&quot;Credit card is not ACTIVE: &quot; + cardId);</span>
+        }
+<span class="pc bpc" id="L109" title="1 of 4 branches missed.">        if (&quot;PURCHASE&quot;.equals(request.type()) &amp;&amp; request.amount().compareTo(card.getAvailableBalance()) &gt; 0) {</span>
+<span class="fc" id="L110">            throw new AndesValidationException(&quot;Insufficient credit limit for card: &quot; + cardId);</span>
+        }
+
+<span class="fc" id="L113">        FraudCheckResponse fraudCheck = fraudCheckClient.evaluate(</span>
+<span class="fc" id="L114">                new FraudCheckRequest(cardId, request.merchant(), request.amount()));</span>
+
+<span class="fc" id="L116">        String referenceId = idGeneratorService.newId(&quot;TXN&quot;);</span>
+<span class="fc" id="L117">        String merchantSlug = SlugUtils.slugify(request.merchant());</span>
+<span class="fc" id="L118">        String idempotencyKey = ChecksumUtils.sha256Hex(</span>
+<span class="fc" id="L119">                cardId + &quot;|&quot; + request.merchant() + &quot;|&quot; + request.amount() + &quot;|&quot; + referenceId);</span>
+<span class="fc" id="L120">        log.info(</span>
+                &quot;Autorizando transaccion {} para tarjeta {} (idempotencyKey={})&quot;,
+                referenceId,
+<span class="fc" id="L123">                MaskUtils.maskDigits(card.getCardNumber(), 4),</span>
+                idempotencyKey);
+
+<span class="fc" id="L126">        CreditCardTransactionEntity transaction = new CreditCardTransactionEntity();</span>
+<span class="fc" id="L127">        transaction.setReferenceId(referenceId);</span>
+<span class="fc" id="L128">        transaction.setCardId(cardId);</span>
+<span class="fc" id="L129">        transaction.setMerchant(request.merchant());</span>
+<span class="fc" id="L130">        transaction.setMerchantSlug(merchantSlug);</span>
+<span class="fc" id="L131">        transaction.setAmount(request.amount());</span>
+<span class="fc" id="L132">        transaction.setType(request.type());</span>
+<span class="fc" id="L133">        transaction.setFraudScore(fraudCheck.getRiskScore());</span>
+
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        if (fraudCheck.getRiskScore() &gt;= FRAUD_REJECT_THRESHOLD) {</span>
+<span class="fc" id="L136">            transaction.setStatus(TX_REJECTED);</span>
+        } else {
+<span class="fc" id="L138">            transaction.setStatus(TX_APPROVED);</span>
+<span class="fc" id="L139">            card.applyTransaction(request.amount(), request.type());</span>
+<span class="fc" id="L140">            creditCardRepository.save(card);</span>
+        }
+
+<span class="fc" id="L143">        return TransactionMapper.toResponse(transactionRepository.save(transaction));</span>
+    }
+
+    @Override
+    public List&lt;TransactionResponse&gt; listTransactions(Long cardId) {
+<span class="nc" id="L148">        findCardOrThrow(cardId);</span>
+<span class="nc" id="L149">        return transactionRepository.findByCardId(cardId).stream()</span>
+<span class="nc" id="L150">                .map(TransactionMapper::toResponse)</span>
+<span class="nc" id="L151">                .toList();</span>
+    }
+
+    private CreditCardEntity findCardOrThrow(Long cardId) {
+<span class="fc" id="L155">        return creditCardRepository.findById(cardId)</span>
+<span class="fc" id="L156">                .orElseThrow(() -&gt; new AndesNotFoundException(&quot;Credit card not found with id: &quot; + cardId));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FraudCheckClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bank-creditcard-service</a> &gt; <a href="index.source.html" class="el_package">pe.edu.galaxy.training.java.gt.creditcard.fraud</a> &gt; <span class="el_source">FraudCheckClient.java</span></div><h1>FraudCheckClient.java</h1><pre class="source lang-java linenums">package pe.edu.galaxy.training.java.gt.creditcard.fraud;
+
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.stereotype.Service;
+
+import pe.andes.api.client.AndesApiClient;
+import pe.andes.api.client.AndesApiClientRegistry;
+import pe.andes.api.common.model.ApiResponse;
+import pe.edu.galaxy.training.java.gt.creditcard.fraud.generated.FraudCheckRequest;
+import pe.edu.galaxy.training.java.gt.creditcard.fraud.generated.FraudCheckResponse;
+
+/**
+ * Consume el servicio externo de scoring de fraude a traves del cliente nombrado &quot;fraudCheck&quot;
+ * (andes-api-client-spring-boot-starter): timeouts, correlation id y mapeo de errores HTTP a
+ * AndesApiException los aporta el starter, sin escribir codigo de plomeria HTTP a mano.
+ *
+ * &lt;p&gt;Este es el segundo contrato del proyecto (contracts/openapi-fraudcheck.yaml), consumido
+ * como cliente. {@link FraudCheckRequest}/{@link FraudCheckResponse} son modelos generados por
+ * openapi-generator-gradle-plugin (tarea {@code openApiGenerate}) a partir de ese contrato -
+ * no se escriben a mano, igual que el patron usado en andes-api-toolkit/examples/poc-client.&lt;/p&gt;
+ *
+ * &lt;p&gt;El simulador interno ({@code FraudCheckSimulatorController}) esta envuelto por
+ * {@code AndesResponseBodyAdvice} (andes-api-server), que aplica el sobre estandar
+ * {@link ApiResponse} a &lt;b&gt;todas&lt;/b&gt; las respuestas del proceso (no hay forma de excluir
+ * un controlador puntual en la version actual del starter). Por eso aqui se deserializa
+ * explicitamente a {@code ApiResponse&lt;FraudCheckResponse&gt;} y se extrae {@code getData()},
+ * en vez de mapear {@link FraudCheckResponse} directamente (lo que fallaria con
+ * {@code MismatchedInputException} al no encontrar {@code riskScore} en la raiz del JSON).
+ * El mock externo independiente ({@code scripts/mock_fraudcheck_server.py}) no tiene este
+ * problema porque no pasa por {@code AndesResponseBodyAdvice}; devuelve el JSON &quot;plano&quot; del
+ * contrato, por eso {@code base-url} debe apuntar a ese mock para probar el cliente sin el
+ * envoltorio del simulador interno (ver README).&lt;/p&gt;
+ */
+@Service
+public class FraudCheckClient {
+
+<span class="fc" id="L37">    private static final ParameterizedTypeReference&lt;ApiResponse&lt;FraudCheckResponse&gt;&gt; RESPONSE_TYPE =</span>
+<span class="fc" id="L38">            new ParameterizedTypeReference&lt;&gt;() {</span>
+            };
+
+    private final AndesApiClient fraudCheckClient;
+
+<span class="fc" id="L43">    public FraudCheckClient(AndesApiClientRegistry registry) {</span>
+<span class="fc" id="L44">        this.fraudCheckClient = registry.get(&quot;fraudCheck&quot;);</span>
+<span class="fc" id="L45">    }</span>
+
+    public FraudCheckResponse evaluate(FraudCheckRequest request) {
+<span class="fc" id="L48">        ApiResponse&lt;FraudCheckResponse&gt; response =</span>
+<span class="fc" id="L49">                fraudCheckClient.post(&quot;/internal/fraud-check&quot;, request, RESPONSE_TYPE);</span>
+<span class="fc" id="L50">        return response.getData();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

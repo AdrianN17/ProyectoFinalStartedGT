@@ -1,0 +1,104 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "pe.edu.galaxy.training.java",
+    "module": "oms-starter-observability-core",
+    "version": "3.0.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-autoconfigure"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-actuator"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-aspectj"
+        },
+        {
+          "group": "io.micrometer",
+          "module": "micrometer-core"
+        },
+        {
+          "group": "io.micrometer",
+          "module": "micrometer-registry-prometheus"
+        }
+      ],
+      "files": [
+        {
+          "name": "oms-starter-observability-core-3.0.1-plain.jar",
+          "url": "oms-starter-observability-core-3.0.1-plain.jar",
+          "size": 11426,
+          "sha512": "874160608ec85b37de6b8ed643329cec406036eb487196f0bad0dcfda4fff951e2d2afcf611d279fd7e8943c7d4543b44b94a11400c64a2059c8d6f847a68f5a",
+          "sha256": "51993cd1961ebda2660e6ecb250e29f8f5c920e2507f8750cd0cadb2da152d2a",
+          "sha1": "48cc226983611e59211562fd19022c905e93f0ac",
+          "md5": "ee3883cfad715a988d9008af3d0ae451"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-autoconfigure"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-actuator"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-aspectj"
+        },
+        {
+          "group": "io.micrometer",
+          "module": "micrometer-core"
+        },
+        {
+          "group": "io.micrometer",
+          "module": "micrometer-registry-prometheus"
+        }
+      ],
+      "files": [
+        {
+          "name": "oms-starter-observability-core-3.0.1-plain.jar",
+          "url": "oms-starter-observability-core-3.0.1-plain.jar",
+          "size": 11426,
+          "sha512": "874160608ec85b37de6b8ed643329cec406036eb487196f0bad0dcfda4fff951e2d2afcf611d279fd7e8943c7d4543b44b94a11400c64a2059c8d6f847a68f5a",
+          "sha256": "51993cd1961ebda2660e6ecb250e29f8f5c920e2507f8750cd0cadb2da152d2a",
+          "sha1": "48cc226983611e59211562fd19022c905e93f0ac",
+          "md5": "ee3883cfad715a988d9008af3d0ae451"
+        }
+      ]
+    }
+  ]
+}

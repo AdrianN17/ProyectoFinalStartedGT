@@ -47,7 +47,7 @@ configurations {
 
 dependencies {
     // BOMs: Galaxy Starters + Andes API Toolkit (Nexus corporativo: maven-releases)
-    implementation platform('pe.edu.galaxy.training.java.bom:oms-starter-bom-core:3.0.0')
+    implementation platform('pe.edu.galaxy.training.java.bom:oms-starter-bom-core:3.0.1')
     implementation platform('pe.andes.api:andes-api-bom:1.0.0')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'

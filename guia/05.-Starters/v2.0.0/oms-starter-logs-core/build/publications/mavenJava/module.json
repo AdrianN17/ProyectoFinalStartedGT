@@ -1,0 +1,114 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "pe.edu.galaxy.training.java",
+    "module": "oms-starter-logs-core",
+    "version": "3.0.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.14.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-web"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-aspectj"
+        },
+        {
+          "group": "net.logstash.logback",
+          "module": "logstash-logback-encoder",
+          "version": {
+            "requires": "8.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "oms-starter-logs-core-3.0.1-plain.jar",
+          "url": "oms-starter-logs-core-3.0.1-plain.jar",
+          "size": 10911,
+          "sha512": "c41967f69d1f10e0faa9d60c2efb468e577202216fc75bd879ae9404d7bf0c0310780021b3117e811de52e806861b57411111cc45d4d5c5b6f8706d46af44630",
+          "sha256": "d902de074c33b378c22b772251bdd365406ab5e362db94178a774f7e0f6b5d76",
+          "sha1": "c29ec62e9583a64ca86dcc8858d7c8ae8fe41ec1",
+          "md5": "f94002c6d17ff8aec050c6a28fb61019"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 21,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-web"
+        },
+        {
+          "group": "org.springframework.boot",
+          "module": "spring-boot-starter-aspectj"
+        },
+        {
+          "group": "net.logstash.logback",
+          "module": "logstash-logback-encoder",
+          "version": {
+            "requires": "8.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "oms-starter-logs-core-3.0.1-plain.jar",
+          "url": "oms-starter-logs-core-3.0.1-plain.jar",
+          "size": 10911,
+          "sha512": "c41967f69d1f10e0faa9d60c2efb468e577202216fc75bd879ae9404d7bf0c0310780021b3117e811de52e806861b57411111cc45d4d5c5b6f8706d46af44630",
+          "sha256": "d902de074c33b378c22b772251bdd365406ab5e362db94178a774f7e0f6b5d76",
+          "sha1": "c29ec62e9583a64ca86dcc8858d7c8ae8fe41ec1",
+          "md5": "f94002c6d17ff8aec050c6a28fb61019"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "oms-starter-logs-core-3.0.1-sources.jar",
+          "url": "oms-starter-logs-core-3.0.1-sources.jar",
+          "size": 6912,
+          "sha512": "7ccd2bdfca9dcfe6148fb2b02e2b8f5322b5f1fc216b9f64fb3d3c286883300895cf0aa7f4dcb602b7664b2236f9c7c7317fc2aae45981f2d2cd64f69090c092",
+          "sha256": "5c3b4bce551012eaafd175e292f7b19b2cb75b4dc6e598442cb2d15ae5d423bf",
+          "sha1": "05369415921d8acb0e40681303aa7a9ac66549cc",
+          "md5": "e4888b197edea3dc09d58fc766672c34"
+        }
+      ]
+    }
+  ]
+}

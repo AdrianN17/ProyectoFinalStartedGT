@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FraudCheckRequest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bank-creditcard-service</a> &gt; <a href="index.source.html" class="el_package">pe.edu.galaxy.training.java.gt.creditcard.fraud.generated</a> &gt; <span class="el_source">FraudCheckRequest.java</span></div><h1>FraudCheckRequest.java</h1><pre class="source lang-java linenums">package pe.edu.galaxy.training.java.gt.creditcard.fraud.generated;
+
+import java.net.URI;
+import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import java.math.BigDecimal;
+import org.springframework.lang.Nullable;
+import java.time.OffsetDateTime;
+import jakarta.validation.constraints.NotNull;
+
+
+import java.util.*;
+import jakarta.annotation.Generated;
+
+/**
+ * FraudCheckRequest
+ */
+
+@Generated(value = &quot;org.openapitools.codegen.languages.SpringCodegen&quot;, date = &quot;2026-10-02T12:46:18.091880954-05:00[America/Lima]&quot;, comments = &quot;Generator version: 7.25.0&quot;)
+public class FraudCheckRequest {
+
+  private Long cardId;
+
+  private String merchant;
+
+  private BigDecimal amount;
+
+  public FraudCheckRequest() {
+<span class="nc" id="L30">    super();</span>
+<span class="nc" id="L31">  }</span>
+
+  /**
+   * Constructor with only required parameters
+   */
+<span class="fc" id="L36">  public FraudCheckRequest(Long cardId, String merchant, BigDecimal amount) {</span>
+<span class="fc" id="L37">    this.cardId = cardId;</span>
+<span class="fc" id="L38">    this.merchant = merchant;</span>
+<span class="fc" id="L39">    this.amount = amount;</span>
+<span class="fc" id="L40">  }</span>
+
+  public FraudCheckRequest cardId(Long cardId) {
+<span class="nc" id="L43">    this.cardId = cardId;</span>
+<span class="nc" id="L44">    return this;</span>
+  }
+
+  /**
+   * Get cardId
+   * @return cardId
+   */
+  @NotNull
+  @JsonProperty(&quot;cardId&quot;)
+  public Long getCardId() {
+<span class="fc" id="L54">    return cardId;</span>
+  }
+
+  @JsonProperty(&quot;cardId&quot;)
+  public void setCardId(Long cardId) {
+<span class="nc" id="L59">    this.cardId = cardId;</span>
+<span class="nc" id="L60">  }</span>
+
+  public FraudCheckRequest merchant(String merchant) {
+<span class="nc" id="L63">    this.merchant = merchant;</span>
+<span class="nc" id="L64">    return this;</span>
+  }
+
+  /**
+   * Get merchant
+   * @return merchant
+   */
+  @NotNull
+  @JsonProperty(&quot;merchant&quot;)
+  public String getMerchant() {
+<span class="fc" id="L74">    return merchant;</span>
+  }
+
+  @JsonProperty(&quot;merchant&quot;)
+  public void setMerchant(String merchant) {
+<span class="nc" id="L79">    this.merchant = merchant;</span>
+<span class="nc" id="L80">  }</span>
+
+  public FraudCheckRequest amount(BigDecimal amount) {
+<span class="nc" id="L83">    this.amount = amount;</span>
+<span class="nc" id="L84">    return this;</span>
+  }
+
+  /**
+   * Monto de la transaccion (BigDecimal en el modelo Java generado).
+   * @return amount
+   */
+  @NotNull
+  @JsonProperty(&quot;amount&quot;)
+  public BigDecimal getAmount() {
+<span class="fc" id="L94">    return amount;</span>
+  }
+
+  @JsonProperty(&quot;amount&quot;)
+  public void setAmount(BigDecimal amount) {
+<span class="nc" id="L99">    this.amount = amount;</span>
+<span class="nc" id="L100">  }</span>
+
+  @Override
+  public boolean equals(Object o) {
+<span class="nc bnc" id="L104" title="All 2 branches missed.">    if (this == o) {</span>
+<span class="nc" id="L105">      return true;</span>
+    }
+<span class="nc bnc" id="L107" title="All 4 branches missed.">    if (o == null || getClass() != o.getClass()) {</span>
+<span class="nc" id="L108">      return false;</span>
+    }
+<span class="nc" id="L110">    FraudCheckRequest fraudCheckRequest = (FraudCheckRequest) o;</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">    return Objects.equals(this.cardId, fraudCheckRequest.cardId) &amp;&amp;</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        Objects.equals(this.merchant, fraudCheckRequest.merchant) &amp;&amp;</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        Objects.equals(this.amount, fraudCheckRequest.amount);</span>
+  }
+
+  @Override
+  public int hashCode() {
+<span class="nc" id="L118">    return Objects.hash(cardId, merchant, amount);</span>
+  }
+
+  @Override
+  public String toString() {
+<span class="nc" id="L123">    StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L124">    sb.append(&quot;class FraudCheckRequest {\n&quot;);</span>
+<span class="nc" id="L125">    sb.append(&quot;    cardId: &quot;).append(toIndentedString(cardId)).append(&quot;\n&quot;);</span>
+<span class="nc" id="L126">    sb.append(&quot;    merchant: &quot;).append(toIndentedString(merchant)).append(&quot;\n&quot;);</span>
+<span class="nc" id="L127">    sb.append(&quot;    amount: &quot;).append(toIndentedString(amount)).append(&quot;\n&quot;);</span>
+<span class="nc" id="L128">    sb.append(&quot;}&quot;);</span>
+<span class="nc" id="L129">    return sb.toString();</span>
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(@Nullable Object o) {
+<span class="nc bnc" id="L137" title="All 2 branches missed.">    return o == null ? &quot;null&quot; : o.toString().replace(&quot;\n&quot;, &quot;\n    &quot;);</span>
+  }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
