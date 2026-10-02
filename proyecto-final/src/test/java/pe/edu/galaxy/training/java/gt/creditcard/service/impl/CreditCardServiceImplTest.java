@@ -18,12 +18,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pe.andes.api.common.exception.AndesConflictException;
 import pe.andes.api.common.exception.AndesNotFoundException;
 import pe.andes.api.common.exception.AndesValidationException;
+import pe.andes.lib.id.autoconfigure.IdGeneratorService;
 import pe.edu.galaxy.training.java.gt.creditcard.dto.IssueCardRequest;
 import pe.edu.galaxy.training.java.gt.creditcard.dto.TransactionRequest;
 import pe.edu.galaxy.training.java.gt.creditcard.entity.CreditCardEntity;
 import pe.edu.galaxy.training.java.gt.creditcard.entity.CreditCardTransactionEntity;
 import pe.edu.galaxy.training.java.gt.creditcard.fraud.FraudCheckClient;
-import pe.edu.galaxy.training.java.gt.creditcard.fraud.FraudCheckResponse;
+import pe.edu.galaxy.training.java.gt.creditcard.fraud.generated.FraudCheckResponse;
 import pe.edu.galaxy.training.java.gt.creditcard.repository.CreditCardRepository;
 import pe.edu.galaxy.training.java.gt.creditcard.repository.CreditCardTransactionRepository;
 
@@ -38,6 +39,9 @@ class CreditCardServiceImplTest {
 
     @Mock
     private FraudCheckClient fraudCheckClient;
+
+    @Mock
+    private IdGeneratorService idGeneratorService;
 
     @InjectMocks
     private CreditCardServiceImpl creditCardService;
@@ -102,6 +106,7 @@ class CreditCardServiceImplTest {
     void authorizeTransactionApprovesAndDebitsBalanceWhenFraudScoreIsLow() {
         when(creditCardRepository.findById(1L)).thenReturn(Optional.of(card));
         when(fraudCheckClient.evaluate(any())).thenReturn(new FraudCheckResponse(10));
+        when(idGeneratorService.newId("TXN")).thenReturn("TXN-01TEST000000000000000001");
         when(transactionRepository.save(any(CreditCardTransactionEntity.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -109,6 +114,8 @@ class CreditCardServiceImplTest {
         var response = creditCardService.authorizeTransaction(1L, request);
 
         assertThat(response.status()).isEqualTo("APPROVED");
+        assertThat(response.referenceId()).isEqualTo("TXN-01TEST000000000000000001");
+        assertThat(response.merchantSlug()).isEqualTo("amazon");
         assertThat(card.getAvailableBalance()).isEqualByComparingTo(BigDecimal.valueOf(4800));
     }
 
@@ -116,6 +123,7 @@ class CreditCardServiceImplTest {
     void authorizeTransactionRejectsWhenFraudScoreIsHighAndDoesNotDebitBalance() {
         when(creditCardRepository.findById(1L)).thenReturn(Optional.of(card));
         when(fraudCheckClient.evaluate(any())).thenReturn(new FraudCheckResponse(95));
+        when(idGeneratorService.newId("TXN")).thenReturn("TXN-01TEST000000000000000002");
         when(transactionRepository.save(any(CreditCardTransactionEntity.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -123,6 +131,7 @@ class CreditCardServiceImplTest {
         var response = creditCardService.authorizeTransaction(1L, request);
 
         assertThat(response.status()).isEqualTo("REJECTED");
+        assertThat(response.merchantSlug()).isEqualTo("suspicious-shop");
         assertThat(card.getAvailableBalance()).isEqualByComparingTo(BigDecimal.valueOf(5000));
     }
 }

@@ -11,8 +11,10 @@ public final class TransactionMapper {
     public static TransactionResponse toResponse(CreditCardTransactionEntity entity) {
         return new TransactionResponse(
                 entity.getId(),
+                entity.getReferenceId(),
                 entity.getCardId(),
                 entity.getMerchant(),
+                entity.getMerchantSlug(),
                 entity.getAmount(),
                 entity.getType(),
                 entity.getStatus(),

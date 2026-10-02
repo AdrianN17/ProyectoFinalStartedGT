@@ -5,8 +5,10 @@ import java.time.LocalDateTime;
 
 public record TransactionResponse(
         Long id,
+        String referenceId,
         Long cardId,
         String merchant,
+        String merchantSlug,
         BigDecimal amount,
         String type,
         String status,

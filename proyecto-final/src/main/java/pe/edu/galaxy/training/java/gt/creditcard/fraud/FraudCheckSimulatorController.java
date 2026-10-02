@@ -7,10 +7,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pe.edu.galaxy.training.java.gt.creditcard.fraud.generated.FraudCheckRequest;
+import pe.edu.galaxy.training.java.gt.creditcard.fraud.generated.FraudCheckResponse;
+
 /**
  * Simulador local del servicio externo de scoring de fraude (patron usado en andes-api-toolkit:
  * examples/poc-client), para que este proyecto sea autocontenido y no dependa de un tercero real.
- * El riesgo crece con el monto de la transaccion.
+ * El riesgo crece con el monto de la transaccion. Implementa el mismo contrato
+ * (contracts/openapi-fraudcheck.yaml) que scripts/mock_fraudcheck_server.py.
  */
 @RestController
 @RequestMapping("/internal/fraud-check")
@@ -21,7 +25,7 @@ public class FraudCheckSimulatorController {
 
     @PostMapping
     public FraudCheckResponse evaluate(@RequestBody FraudCheckRequest request) {
-        BigDecimal amount = request.amount();
+        BigDecimal amount = request.getAmount();
         int riskScore;
         if (amount.compareTo(HIGH_RISK_AMOUNT) > 0) {
             riskScore = 90;
@@ -30,6 +34,6 @@ public class FraudCheckSimulatorController {
         } else {
             riskScore = 10;
         }
-        return new FraudCheckResponse(riskScore);
+        return new FraudCheckResponse().riskScore(riskScore);
     }
 }
