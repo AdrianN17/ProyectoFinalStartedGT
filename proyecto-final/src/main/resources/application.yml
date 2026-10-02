@@ -84,15 +84,9 @@ andes:
       clients:
         fraudCheck:
           # Contrato: contracts/openapi-fraudcheck.yaml (segundo contrato del proyecto, lado
-          # cliente). Por defecto apunta al simulador interno autocontenido
-          # (FraudCheckSimulatorController) en este mismo proceso.
-          #
-          # Alternativa: para probar el cliente en aislamiento, contra un proceso externo real,
-          # levanta el mock independiente en Python (sin el envoltorio ApiResponse que aplica
-          # AndesResponseBodyAdvice a este proceso) y apunta base-url ahi:
+          # cliente). Para la demo se consume SIEMPRE el mock externo en Python:
           #   python3 scripts/mock_fraudcheck_server.py --port 9090
-          #   andes.api.client.clients.fraudCheck.base-url=http://localhost:9090
-          base-url: http://localhost:8080
+          base-url: http://localhost:9090
           connect-timeout: 2s
           read-timeout: 5s
           correlation-id-enabled: true
