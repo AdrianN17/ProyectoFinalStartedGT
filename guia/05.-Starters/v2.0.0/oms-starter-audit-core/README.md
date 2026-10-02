@@ -2,7 +2,7 @@
 
 Starter de auditoría y trazabilidad para microservicios Spring Boot 4.1.1 (Java 21).
 
-Los eventos de auditoría se publican de forma asíncrona en un **tópico de Azure Service Bus**
+Los eventos de auditoría se publican de forma asíncrona en una **cola de Azure Service Bus**
 (en reemplazo de Apache Kafka usado en versiones anteriores).
 
 ## Publicar en Maven local
@@ -14,7 +14,7 @@ Los eventos de auditoría se publican de forma asíncrona en un **tópico de Azu
 ## Dependencia en el microservicio
 
 ```gradle
-implementation 'pe.edu.galaxy.training.java:oms-starter-audit-core:3.0.0'
+implementation 'pe.edu.galaxy.training.java:oms-starter-audit-core:3.0.3'
 ```
 
 ## Configuración
@@ -29,11 +29,11 @@ oms:
     log-errors: true
     max-payload-length: 8000
     service-bus:
-      # Obligatorio: connection string del namespace/topico (clave compartida SAS).
+      # Obligatorio: connection string del namespace/cola (clave compartida SAS).
       # Service Bus NO usa DefaultAzureCredential/az login en este starter
       # (reservado exclusivamente para Azure Key Vault en oms-starter-security-core).
       connection-string: ${AZURE_SERVICEBUS_CONNECTION_STRING:}
-      topic-name: oms-audit-topic
+      queue-name: oms-audit-queue
 ```
 
 ## Uso
@@ -46,4 +46,4 @@ public ClientResponse create(ClientRequest request) {
 ```
 
 El starter registra automáticamente una fila en la tabla `audit_logs` para operaciones exitosas y con error,
-y publica cada evento como mensaje JSON en el tópico de Azure Service Bus configurado.
+y publica cada evento como mensaje JSON en la cola de Azure Service Bus configurada.

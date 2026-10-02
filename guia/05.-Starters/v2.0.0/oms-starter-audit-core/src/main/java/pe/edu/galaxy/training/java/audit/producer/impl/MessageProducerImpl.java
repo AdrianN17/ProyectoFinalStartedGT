@@ -27,7 +27,7 @@ public class MessageProducerImpl implements MessageProducer {
     public void send(AuditLogMessage auditLogMessage) {
         try {
             String json= objectMapper.writeValueAsString(auditLogMessage);
-            log.info("TopicName =>{}",properties.getServiceBus().getTopicName());
+            log.info("QueueName =>{}", properties.getServiceBus().getQueueName());
             log.info("json =>{}",json);
 
             ServiceBusMessage message = new ServiceBusMessage(json);

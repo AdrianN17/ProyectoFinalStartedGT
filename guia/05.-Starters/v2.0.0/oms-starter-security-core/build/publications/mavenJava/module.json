@@ -3,7 +3,7 @@
   "component": {
     "group": "pe.edu.galaxy.training.java",
     "module": "oms-starter-security-core",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -59,13 +59,13 @@
       ],
       "files": [
         {
-          "name": "oms-starter-security-core-3.0.2-plain.jar",
-          "url": "oms-starter-security-core-3.0.2-plain.jar",
+          "name": "oms-starter-security-core-3.0.3-plain.jar",
+          "url": "oms-starter-security-core-3.0.3-plain.jar",
           "size": 35321,
-          "sha512": "7227be0358e588308383112e6438db3ba3e0176ad99f43ecfefcd93c3b6edcac177cc8c6288cba7c7b68ed33c24ef583193fd68ade2d33df25ebd9a18ee276db",
-          "sha256": "c0a40ec8429b92dcfc7a57bc5aea4c227e39e712516961f60ebcdb8b73aca21e",
-          "sha1": "0e3aa12e8190e0841df438be4019e9f3bd28e782",
-          "md5": "bcdf3eee022959a5e2e26624f4e5b576"
+          "sha512": "0489e3ac091d15095aad856b59a5dc64057a13fca976b3e331b78458e1a9f95b512881beaf3de33e4976b0b82bbc0090d3d5f95baa1629c0a4aa9a4516873e7d",
+          "sha256": "f5832cee5a79b38be4bdec83659522012c139302287e7debcc932def287dc69a",
+          "sha1": "598080358a27596b62e3dccb59d3050a77501339",
+          "md5": "19897f46e3d8744da6584f966abd6caa"
         }
       ]
     },
@@ -83,7 +83,7 @@
           "group": "pe.edu.galaxy.training.java",
           "module": "oms-starter-audit-core",
           "version": {
-            "requires": "3.0.2"
+            "requires": "3.0.3"
           }
         },
         {
@@ -121,13 +121,13 @@
       ],
       "files": [
         {
-          "name": "oms-starter-security-core-3.0.2-plain.jar",
-          "url": "oms-starter-security-core-3.0.2-plain.jar",
+          "name": "oms-starter-security-core-3.0.3-plain.jar",
+          "url": "oms-starter-security-core-3.0.3-plain.jar",
           "size": 35321,
-          "sha512": "7227be0358e588308383112e6438db3ba3e0176ad99f43ecfefcd93c3b6edcac177cc8c6288cba7c7b68ed33c24ef583193fd68ade2d33df25ebd9a18ee276db",
-          "sha256": "c0a40ec8429b92dcfc7a57bc5aea4c227e39e712516961f60ebcdb8b73aca21e",
-          "sha1": "0e3aa12e8190e0841df438be4019e9f3bd28e782",
-          "md5": "bcdf3eee022959a5e2e26624f4e5b576"
+          "sha512": "0489e3ac091d15095aad856b59a5dc64057a13fca976b3e331b78458e1a9f95b512881beaf3de33e4976b0b82bbc0090d3d5f95baa1629c0a4aa9a4516873e7d",
+          "sha256": "f5832cee5a79b38be4bdec83659522012c139302287e7debcc932def287dc69a",
+          "sha1": "598080358a27596b62e3dccb59d3050a77501339",
+          "md5": "19897f46e3d8744da6584f966abd6caa"
         }
       ]
     }

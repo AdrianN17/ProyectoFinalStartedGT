@@ -6,7 +6,7 @@
 
     <groupId>pe.edu.galaxy.training.java.bom</groupId>
     <artifactId>oms-starter-bom-core</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
     <packaging>pom</packaging>
 
     <name>Galaxy Training – Starter Libraries BOM</name>
@@ -39,22 +39,22 @@
             <dependency>
                 <groupId>pe.edu.galaxy.training.java</groupId>
                 <artifactId>oms-starter-logs-core</artifactId>
-                <version>3.0.2</version>
+                <version>3.0.3</version>
             </dependency>
             <dependency>
                 <groupId>pe.edu.galaxy.training.java</groupId>
                 <artifactId>oms-starter-audit-core</artifactId>
-                <version>3.0.2</version>
+                <version>3.0.3</version>
             </dependency>
             <dependency>
                 <groupId>pe.edu.galaxy.training.java</groupId>
                 <artifactId>oms-starter-security-core</artifactId>
-                <version>3.0.2</version>
+                <version>3.0.3</version>
             </dependency>
             <dependency>
                 <groupId>pe.edu.galaxy.training.java</groupId>
                 <artifactId>oms-starter-observability-core</artifactId>
-                <version>3.0.2</version>
+                <version>3.0.3</version>
             </dependency>
 
         </dependencies>

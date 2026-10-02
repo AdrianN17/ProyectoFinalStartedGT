@@ -3,6 +3,7 @@ package pe.edu.galaxy.training.java.gt.creditcard.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,11 +42,13 @@ public class CreditCardEntity {
     @Encrypt
     @Mask(type = MaskType.CARD)
     @Sensitive(level = SensitivityLevel.HIGH, category = "PCI")
+    @Column(length = 1024)
     private String cardNumber;
 
     @Encrypt
     @Mask(type = MaskType.FULL)
     @Sensitive(level = SensitivityLevel.HIGH, category = "PCI")
+    @Column(length = 1024)
     private String cvv;
 
     private Integer expirationMonth;

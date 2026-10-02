@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>pe.edu.galaxy.training.java</groupId>
   <artifactId>oms-starter-logs-core</artifactId>
-  <version>3.0.2</version>
+  <version>3.0.3</version>
   <packaging>pom</packaging>
   <dependencies>
     <dependency>

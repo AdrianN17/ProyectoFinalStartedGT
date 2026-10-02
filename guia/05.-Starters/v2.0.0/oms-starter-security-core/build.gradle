@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'pe.edu.galaxy.training.java'
-version = '3.0.2'
+version = '3.0.3'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -38,7 +38,7 @@ dependencies {
     api 'com.azure:azure-security-keyvault-keys'
     api 'com.azure.spring:spring-cloud-azure-starter-keyvault-secrets'
 
-    implementation "pe.edu.galaxy.training.java:oms-starter-audit-core:3.0.2"
+    implementation "pe.edu.galaxy.training.java:oms-starter-audit-core:3.0.3"
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 

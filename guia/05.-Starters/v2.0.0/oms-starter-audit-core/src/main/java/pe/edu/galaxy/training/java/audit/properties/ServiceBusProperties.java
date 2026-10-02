@@ -15,7 +15,7 @@ public class ServiceBusProperties {
     private String connectionString;
 
     /**
-     * Nombre del topico de Service Bus donde se publican los eventos de auditoria.
+     * Nombre de la cola de Service Bus donde se publican los eventos de auditoria.
      */
-    private String topicName;
+    private String queueName;
 }

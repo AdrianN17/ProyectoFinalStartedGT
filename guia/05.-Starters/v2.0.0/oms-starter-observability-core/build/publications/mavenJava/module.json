@@ -3,7 +3,7 @@
   "component": {
     "group": "pe.edu.galaxy.training.java",
     "module": "oms-starter-observability-core",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "attributes": {
       "org.gradle.status": "release"
     }
@@ -47,13 +47,13 @@
       ],
       "files": [
         {
-          "name": "oms-starter-observability-core-3.0.2-plain.jar",
-          "url": "oms-starter-observability-core-3.0.2-plain.jar",
+          "name": "oms-starter-observability-core-3.0.3-plain.jar",
+          "url": "oms-starter-observability-core-3.0.3-plain.jar",
           "size": 11426,
-          "sha512": "ce2dcb74c6d11663b05c75ad10aabe86c656347529fde977f43f9375ba5c5bd9ebf9d0cbe9e32e41b222a8a82be5232a1df36f7b9d4da6badda1a8d803aacafa",
-          "sha256": "06bcb8f9a07f80175bdfbd026e357d1ba7633cf5fc33f5afc265d57b33b5c4ac",
-          "sha1": "30fa3dfb921be54551710d974d6aacf5b6def0df",
-          "md5": "17662391ac7c9893372f7d745589971e"
+          "sha512": "da525bda6ef9a22cdafdf77b6ec2abe9dbad4458b9fe77a302e8e370d6c120c4f0e091e6c7967bf34534877100c9ca0463eec0404f040276b0f352d338d0493e",
+          "sha256": "1961f76a3b7bc6cd8541559e0d1aa9a97d1172bc754a89722b1181edae7c0430",
+          "sha1": "b9ff7cbfa5a999788d7f819b4e9a4e58777db6ef",
+          "md5": "69eb1c8b249e11184394006447569c00"
         }
       ]
     },
@@ -90,13 +90,13 @@
       ],
       "files": [
         {
-          "name": "oms-starter-observability-core-3.0.2-plain.jar",
-          "url": "oms-starter-observability-core-3.0.2-plain.jar",
+          "name": "oms-starter-observability-core-3.0.3-plain.jar",
+          "url": "oms-starter-observability-core-3.0.3-plain.jar",
           "size": 11426,
-          "sha512": "ce2dcb74c6d11663b05c75ad10aabe86c656347529fde977f43f9375ba5c5bd9ebf9d0cbe9e32e41b222a8a82be5232a1df36f7b9d4da6badda1a8d803aacafa",
-          "sha256": "06bcb8f9a07f80175bdfbd026e357d1ba7633cf5fc33f5afc265d57b33b5c4ac",
-          "sha1": "30fa3dfb921be54551710d974d6aacf5b6def0df",
-          "md5": "17662391ac7c9893372f7d745589971e"
+          "sha512": "da525bda6ef9a22cdafdf77b6ec2abe9dbad4458b9fe77a302e8e370d6c120c4f0e091e6c7967bf34534877100c9ca0463eec0404f040276b0f352d338d0493e",
+          "sha256": "1961f76a3b7bc6cd8541559e0d1aa9a97d1172bc754a89722b1181edae7c0430",
+          "sha1": "b9ff7cbfa5a999788d7f819b4e9a4e58777db6ef",
+          "md5": "69eb1c8b249e11184394006447569c00"
         }
       ]
     }

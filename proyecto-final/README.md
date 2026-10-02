@@ -60,8 +60,7 @@ propio contrato OpenAPI:
      # y en application.yml: andes.api.client.clients.fraudCheck.base-url=http://localhost:9090
      ```
 - Cada operacion queda auditada en **Azure Service Bus** (`oms-starter-audit-core`): en este
-  proyecto, cuando el namespace usa SKU **Basic**, se publica en la cola `queue-audit` mediante
-  un sender custom (`AuditServiceBusQueueConfig`) compatible con colas,
+  proyecto, cuando el namespace usa SKU **Basic**, se publica en la cola `queue-audit`,
   registrada con trazas correlacionadas (`oms-starter-logs-core`), medida con metricas de negocio
   (`oms-starter-observability-core`) y expuesta bajo el envelope estandar `{success, data, error,
   metadata}` con manejo centralizado de errores (`andes-api-server-spring-boot-starter`).

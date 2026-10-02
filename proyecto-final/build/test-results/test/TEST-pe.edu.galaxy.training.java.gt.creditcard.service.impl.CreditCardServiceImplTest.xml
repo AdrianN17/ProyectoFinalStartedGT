@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-02T18:44:33.829Z" hostname="adrianf" time="0.818">
+<testsuite name="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-02T19:03:13.896Z" hostname="adrianf" time="0.932">
   <properties/>
-  <testcase name="authorizeTransactionRejectsWhenAmountExceedsAvailableBalance()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.738"/>
-  <testcase name="authorizeTransactionRejectsWhenCardIsNotActive()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.007"/>
-  <testcase name="authorizeTransactionRejectsWhenFraudScoreIsHighAndDoesNotDebitBalance()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.043"/>
-  <testcase name="findByIdThrowsNotFoundWhenMissing()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.006"/>
-  <testcase name="authorizeTransactionApprovesAndDebitsBalanceWhenFraudScoreIsLow()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.008"/>
-  <testcase name="issueCardPersistsWithAvailableBalanceEqualToCreditLimit()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.008"/>
-  <system-out><![CDATA[{"@timestamp":"2026-10-02T13:44:34.592833445-05:00","level":"INFO","logger_name":"pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImpl","thread_name":"Test worker","message":"Autorizando transaccion TXN-01TEST000000000000000002 para tarjeta ************1111 (idempotencyKey=b76341615bb6762d85d130f97b6d93e74ff49664992ec1022482eecd7ca3cc58)","application":"bank-creditcard-service"}
-{"@timestamp":"2026-10-02T13:44:34.636295973-05:00","level":"INFO","logger_name":"pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImpl","thread_name":"Test worker","message":"Autorizando transaccion TXN-01TEST000000000000000001 para tarjeta ************1111 (idempotencyKey=cd71183846365876d2436e97feb920a30fe7628b5129aa243b5b13122be7ab86)","application":"bank-creditcard-service"}
+  <testcase name="authorizeTransactionRejectsWhenAmountExceedsAvailableBalance()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.88"/>
+  <testcase name="authorizeTransactionRejectsWhenCardIsNotActive()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.004"/>
+  <testcase name="authorizeTransactionRejectsWhenFraudScoreIsHighAndDoesNotDebitBalance()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.025"/>
+  <testcase name="findByIdThrowsNotFoundWhenMissing()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.004"/>
+  <testcase name="authorizeTransactionApprovesAndDebitsBalanceWhenFraudScoreIsLow()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.006"/>
+  <testcase name="issueCardPersistsWithAvailableBalanceEqualToCreditLimit()" classname="pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImplTest" time="0.006"/>
+  <system-out><![CDATA[{"@timestamp":"2026-10-02T14:03:14.794928577-05:00","level":"INFO","logger_name":"pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImpl","thread_name":"Test worker","message":"Autorizando transaccion TXN-01TEST000000000000000002 para tarjeta ************1111 (idempotencyKey=b76341615bb6762d85d130f97b6d93e74ff49664992ec1022482eecd7ca3cc58)","application":"bank-creditcard-service"}
+{"@timestamp":"2026-10-02T14:03:14.82020211-05:00","level":"INFO","logger_name":"pe.edu.galaxy.training.java.gt.creditcard.service.impl.CreditCardServiceImpl","thread_name":"Test worker","message":"Autorizando transaccion TXN-01TEST000000000000000001 para tarjeta ************1111 (idempotencyKey=cd71183846365876d2436e97feb920a30fe7628b5129aa243b5b13122be7ab86)","application":"bank-creditcard-service"}
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

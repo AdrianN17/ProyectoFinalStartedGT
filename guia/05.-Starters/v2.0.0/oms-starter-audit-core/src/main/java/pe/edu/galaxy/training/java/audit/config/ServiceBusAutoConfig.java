@@ -12,11 +12,11 @@ import pe.edu.galaxy.training.java.audit.properties.ServiceBusProperties;
 
 /**
  * Autoconfiguracion del cliente de envio de eventos de auditoria hacia un
- * topico de Azure Service Bus, en reemplazo del {@code KafkaTemplate} usado
+ * cola de Azure Service Bus, en reemplazo del {@code KafkaTemplate} usado
  * previamente con Apache Kafka.
  *
  * <p>Service Bus se autentica siempre con connection string (clave compartida
- * del namespace/topico); no se usa {@code DefaultAzureCredential} aqui para
+ * del namespace/cola); no se usa {@code DefaultAzureCredential} aqui para
  * mantener el flujo de credenciales (az login) reservado exclusivamente a
  * Azure Key Vault en {@code oms-starter-security-core}.</p>
  *
@@ -44,11 +44,14 @@ public class ServiceBusAutoConfig {
 					"oms.audit.service-bus.connection-string es obligatorio: Service Bus se autentica "
 							+ "con connection string, no con credenciales por defecto (az login).");
 		}
+		if (serviceBus.getQueueName() == null || serviceBus.getQueueName().isBlank()) {
+			throw new IllegalStateException("oms.audit.service-bus.queue-name es obligatorio.");
+		}
 
 		return new ServiceBusClientBuilder()
 				.connectionString(serviceBus.getConnectionString())
 				.sender()
-				.topicName(serviceBus.getTopicName())
+				.queueName(serviceBus.getQueueName())
 				.buildClient();
 	}
 }

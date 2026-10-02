@@ -33,12 +33,11 @@ localmente.
 
 ### 3. oms-starter-audit-core
 - **Propiedades**: prefijo `oms.audit` (`enabled`, `log-request`, `log-response`, `log-errors`,
-  `service-bus.connection-string`, `service-bus.topic-name` en el starter; en este proyecto se
-  usa `service-bus.queue-name` para compatibilidad con Service Bus Basic).
+  `service-bus.connection-string`, `service-bus.queue-name`).
 - **Autenticacion**: Service Bus se autentica **solo con connection string** (clave compartida
   SAS); no usa `DefaultAzureCredential`/`az login` (reservado exclusivamente a Key Vault).
 - **Anotacion**: `@Auditable(operation, entity, description)` a nivel de metodo.
-- **Uso**: `CreditCardServiceImpl` -> cola `queue-audit` mediante `AuditServiceBusQueueConfig`.
+- **Uso**: `CreditCardServiceImpl` -> cola `queue-audit`.
 
 ### 4. oms-starter-security-core
 - **Propiedades**: prefijo `oms.sensitive` (`encrypt.enabled`, `encrypt.provider`,
