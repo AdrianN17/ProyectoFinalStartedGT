@@ -131,12 +131,41 @@ openApiGenerate {
     ])
 }
 
+tasks.register('openApiGenerateCreditCardServer', org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+    generatorName = 'spring'
+    inputSpec = file("$projectDir/contracts/openapi-creditcard.yaml")
+    outputDir = file("$buildDir/generated/openapi-server")
+    apiPackage = 'pe.edu.galaxy.training.java.gt.creditcard.generated.server.api'
+    modelPackage = 'pe.edu.galaxy.training.java.gt.creditcard.generated.server.model'
+    invokerPackage = 'pe.edu.galaxy.training.java.gt.creditcard.generated.server.invoker'
+    generateApiTests = false
+    generateModelTests = false
+    generateApiDocumentation = false
+    generateModelDocumentation = false
+    skipOverwrite = false
+    globalProperties.set([
+            models         : '',
+            apis           : '',
+            supportingFiles: 'ApiUtil.java',
+    ])
+    configOptions.set([
+            interfaceOnly     : 'false',
+            delegatePattern   : 'true',
+            useTags           : 'true',
+            useSpringBoot3    : 'true',
+            openApiNullable   : 'false',
+            documentationProvider: 'none',
+    ])
+}
+
 sourceSets {
     main {
         java {
             srcDir "$buildDir/generated/openapi/src/main/java"
+            srcDir "$buildDir/generated/openapi-server/src/main/java"
         }
     }
 }
 
 compileJava.dependsOn tasks.named('openApiGenerate')
+compileJava.dependsOn tasks.named('openApiGenerateCreditCardServer')

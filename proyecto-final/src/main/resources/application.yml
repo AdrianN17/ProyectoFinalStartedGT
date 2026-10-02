@@ -72,7 +72,7 @@ andes:
       correlation:
         enabled: true
       response:
-        wrap-enabled: true
+        wrap-enabled: false
       error-handling:
         enabled: true
       openapi:

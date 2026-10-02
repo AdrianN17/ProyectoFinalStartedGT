@@ -11,3 +11,11 @@ oms:
     # Azure Service Bus (el SDK valida la conexion de forma eager al construir
     # el ServiceBusSenderClient, a diferencia del KafkaTemplate anterior que era lazy).
     enabled: false
+
+andes:
+  api:
+    client:
+      clients:
+        fraudCheck:
+          # En tests de integracion se usa el simulador interno levantado en el mismo proceso.
+          base-url: http://localhost:8080
