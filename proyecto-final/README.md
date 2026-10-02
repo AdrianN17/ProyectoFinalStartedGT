@@ -1,9 +1,10 @@
 # Proyecto Final - Starter Development (Galaxy Training)
 
 **`bank-creditcard-service`**: microservicio bancario de **Tarjetas de Credito** que integra, en
-un unico proyecto Spring Boot, los 4 Galaxy Starters v2.0.0 (`guia/05.-Starters/v2.0.0/`: logs,
-audit, security, observability) **y** el starter propio `andes-api-toolkit/` (server + client,
-enfoque API-first con OpenAPI), tal como exige la rubrica del curso *Starter Development*.
+un unico proyecto Spring Boot 4.1.1 / Java 21, los 4 Galaxy Starters v3.0.0 (`guia/05.-Starters/v2.0.0/`:
+logs, audit, security, observability) **y** el toolkit `andes-api-toolkit` (server + client,
+enfoque API-first con OpenAPI), resuelto desde el repositorio corporativo Nexus, tal como exige
+la rubrica del curso *Starter Development*.
 
 > Este directorio vive **fuera** de `guia/` a proposito: `guia/` sera eliminado despues de las
 > pruebas del curso, por lo que todo el trabajo nuevo del proyecto final se hizo aqui.
@@ -14,9 +15,12 @@ enfoque API-first con OpenAPI), tal como exige la rubrica del curso *Starter Dev
 |---|---|---|
 | [docs/INVENTARIO-STARTERS.md](docs/INVENTARIO-STARTERS.md) | Inventario completo de los starters (BOM + 4 Galaxy + Andes) | Pattern 01 |
 | [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md) | Diagramas de arquitectura y secuencia (Mermaid) | Pattern 02 / 10 |
-| [contracts/openapi-creditcard.yaml](contracts/openapi-creditcard.yaml) | Contrato OpenAPI 3 del API de Tarjetas de Credito (API-first) | Pattern 03 |
+| [contracts/openapi-creditcard.yaml](contracts/openapi-creditcard.yaml) | Contrato OpenAPI 3 del API de Tarjetas de Credito (API-first, lado servidor) | Pattern 03 |
+| [contracts/openapi-fraudcheck.yaml](contracts/openapi-fraudcheck.yaml) | Contrato OpenAPI 3 del API externa de Fraud Check (lado cliente; modelos generados con `openApiGenerate`) | Pattern 03 |
+| [scripts/mock_fraudcheck_server.py](scripts/mock_fraudcheck_server.py) | Mock standalone en Python (sin dependencias) del contrato de Fraud Check, para probar `FraudCheckClient` en aislamiento | Pattern 09 |
 | [src/main/java/.../creditcard](src/main/java/pe/edu/galaxy/training/java/gt/creditcard) | Proyecto integrado: dominio Banca / Tarjeta de Credito usando los 5 starters a la vez | Pattern 02-09 |
 | [scripts/publish-starters.ps1](scripts/publish-starters.ps1) | Automatiza la publicacion de starters + BOMs (Galaxy y Andes) en Maven Local | Pattern 09 |
+| [scripts/publish-starters-to-nexus.ps1](scripts/publish-starters-to-nexus.ps1) / [.sh](scripts/publish-starters-to-nexus.sh) | Automatiza la publicacion de los 4 Galaxy Starters + BOM en el Nexus corporativo (`maven-releases`/`maven-snapshots`) | Pattern 09 |
 
 ## Caso de uso: Banca - Tarjeta de Credito
 
@@ -28,28 +32,78 @@ enfoque API-first con OpenAPI), tal como exige la rubrica del curso *Starter Dev
   llama a un servicio de **scoring de fraude** a traves de `andes-api-client-spring-boot-starter`
   (cliente nombrado `fraudCheck`, con timeouts/errores estandarizados) y aprueba o rechaza la
   transaccion segun el riesgo devuelto.
-- Cada operacion queda auditada en Kafka (`oms-starter-audit-core`), registrada con trazas
-  correlacionadas (`oms-starter-logs-core`), medida con metricas de negocio
+
+### Los 2 contratos OpenAPI del proyecto
+
+El proyecto usa `andes-api-toolkit` en sus dos facetas (servidor y cliente), cada una con su
+propio contrato OpenAPI:
+
+1. **Servidor** ([contracts/openapi-creditcard.yaml](contracts/openapi-creditcard.yaml)): el API
+   de Tarjetas de Credito que este servicio **expone**. `CreditCardController` lo implementa a
+   mano (API-first); `andes-api-server-spring-boot-starter` aporta el envelope `{success, data,
+   error, metadata}`, correlation id y manejo de errores (`AndesResponseBodyAdvice`).
+2. **Cliente** ([contracts/openapi-fraudcheck.yaml](contracts/openapi-fraudcheck.yaml)): el API
+   externa de Fraud Check que este servicio **consume** via `FraudCheckClient`
+   (`andes-api-client-spring-boot-starter`, cliente nombrado `fraudCheck`). Los modelos
+   `FraudCheckRequest`/`FraudCheckResponse` **no se escriben a mano**: se generan en build time
+   desde el contrato con `openapi-generator-gradle-plugin` (tarea `openApiGenerate`, paquete
+   `...creditcard.fraud.generated`), igual que el patron usado en
+   `andes-api-toolkit/examples/poc-client`.
+   - Este contrato lo satisfacen dos implementaciones intercambiables: el simulador interno
+     `FraudCheckSimulatorController` (Java, mismo proceso) y el mock standalone
+     [scripts/mock_fraudcheck_server.py](scripts/mock_fraudcheck_server.py) (Python, proceso
+     independiente, sin el envoltorio `ApiResponse` que aplica `AndesResponseBodyAdvice` a todo
+     el proceso Java) — util para probar el cliente de forma aislada, como lo haria un servicio
+     externo real:
+     ```bash
+     python3 scripts/mock_fraudcheck_server.py --port 9090
+     # y en application.yml: andes.api.client.clients.fraudCheck.base-url=http://localhost:9090
+     ```
+- Cada operacion queda auditada en un topico de **Azure Service Bus** (`oms-starter-audit-core`),
+  registrada con trazas correlacionadas (`oms-starter-logs-core`), medida con metricas de negocio
   (`oms-starter-observability-core`) y expuesta bajo el envelope estandar `{success, data, error,
   metadata}` con manejo centralizado de errores (`andes-api-server-spring-boot-starter`).
 
 ## Requisitos previos
 
 - JDK 21
-- Los starters Galaxy, su BOM, y el BOM + artefactos de `andes-api-toolkit` deben estar publicados
-  en Maven Local (`~/.m2/repository`). Ejecutar una vez:
+- Los starters Galaxy y su BOM deben estar publicados en Maven Local (`~/.m2/repository`).
+  Ejecutar una vez:
 
 ```powershell
 ./scripts/publish-starters.ps1
 ```
 
-Este script recorre `guia/05.-Starters/v2.0.0/` (gradlew publishToMavenLocal + mvn install del
-BOM) y `andes-api-toolkit/` (mvn install), sin modificar nada dentro de esas carpetas.
+Este script recorre `guia/05.-Starters/v2.0.0/` (`gradlew publishToMavenLocal` + `mvn install`
+del BOM), sin modificar nada dentro de esas carpetas.
 
-> Los Galaxy Starters (Spring Boot 3.5.6 originalmente) y `andes-api-toolkit` (Spring Boot 4.1.1)
-> deben resolver a una version de Spring Boot compatible entre si para convivir en el mismo
-> classpath de este proyecto unico; ese ajuste de versiones se gestiona directamente en los
-> starters de origen.
+- El toolkit `andes-api-toolkit` (`pe.andes.api:*`, incluido su BOM `andes-api-bom`) **ya no se
+  construye localmente**: se resuelve directamente desde el repositorio corporativo **Nexus**
+  (`http://localhost:8089/repository/maven-releases`, version `1.0.0`), configurado en
+  `build.gradle`. Para que Gradle pueda autenticarse contra Nexus, define las credenciales en
+  **uno** de estos lugares (nunca las subas al repositorio ni las pongas directamente en
+  `build.gradle`):
+
+  **Opcion A — `~/.gradle/gradle.properties`** (recomendada para desarrollo local; este archivo
+  vive en tu `home`, fuera del repo git):
+  ```properties
+  nexusUser=tu-usuario-nexus
+  nexusPassword=tu-password-nexus
+  ```
+
+  **Opcion B — variables de entorno** (recomendada para CI/CD):
+  ```bash
+  export ORG_GRADLE_PROJECT_nexusUser=tu-usuario-nexus
+  export ORG_GRADLE_PROJECT_nexusPassword=tu-password-nexus
+  ```
+
+  Si Nexus corre en local via Docker con HTTP plano (sin TLS), los repos ya tienen
+  `allowInsecureProtocol = true` en `build.gradle`; en un Nexus corporativo real con HTTPS no
+  deberia ser necesario.
+
+> Los Galaxy Starters y `andes-api-toolkit` corren ambos sobre **Spring Boot 4.1.1 / Java 21**
+> (ver migracion documentada en cada starter), por lo que conviven sin conflicto de versiones en
+> el classpath de este proyecto unico.
 
 ## Compilar y ejecutar
 
@@ -96,38 +150,46 @@ numero de tarjeta/CVV ya enmascarados (oms-starter-security-core).
 
 ## SemVer y versionamiento
 
-- Los starters Galaxy (`guia/05.-Starters/v2.0.0/`) versionan `oms-starter-audit-core` en `2.0.0`
-  mientras que `logs-core`, `security-core` y `observability-core` permanecen en `1.0.0`; el BOM
-  (`2.0.0`) referencia siempre la combinacion compatible mas reciente.
-- `andes-api-toolkit` versiona todos sus modulos en `1.0.0-SNAPSHOT`, gestionados por
-  `andes-api-bom`.
+- Los starters Galaxy (`guia/05.-Starters/v2.0.0/`) y su BOM versionan todos en `3.0.0`
+  (migracion a Spring Boot 4.1.1 / Java 21 + Azure Service Bus/Key Vault).
+- `andes-api-toolkit` versiona todos sus modulos en `1.0.0`, gestionados por
+  `andes-api-bom`, y se resuelve desde el repositorio Nexus (`maven-releases`).
 - Este proyecto (`bank-creditcard-service`) parte en `1.0.0` (primera version estable del proyecto
   final) y debe incrementarse siguiendo SemVer (`MAJOR.MINOR.PATCH`).
 
 ## Infraestructura opcional (para demo con integraciones reales)
 
-Por defecto el proyecto funciona sin infraestructura externa (H2 en memoria, Vault/Kafka
-deshabilitados en pruebas; el scoring de fraude usa un simulador interno autocontenido). Para una
-demostracion completa:
+Por defecto el proyecto funciona sin infraestructura externa: H2 en memoria, Azure Service
+Bus/Key Vault deshabilitados o simulados en pruebas (ver
+[docs/ISSUES-CONOCIDOS.md](docs/ISSUES-CONOCIDOS.md) para el detalle de como se simula Key Vault
+en tests), y el scoring de fraude usa un simulador interno autocontenido. Para una demostracion
+completa contra Azure real:
 
 ```bash
-# Kafka (oms-starter-audit-core)
-docker run -d --name kafka -p 9092:9092 apache/kafka:3.7.0
+# Azure Service Bus (oms-starter-audit-core): crear namespace + topico en Azure
+az servicebus namespace create --name <mi-namespace> --resource-group <mi-rg> --sku Standard
+az servicebus topic create --name topic-audit --namespace-name <mi-namespace> --resource-group <mi-rg>
+# Luego exportar la connection string (oms.audit.service-bus.connection-string):
+export AZURE_SERVICEBUS_CONNECTION_STRING="Endpoint=sb://<mi-namespace>.servicebus.windows.net/;..."
 
-# Vault Transit (oms-starter-security-core)
-docker run --cap-add=IPC_LOCK -e VAULT_DEV_ROOT_TOKEN_ID=root \
-  -e VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200 -p 8200:8200 hashicorp/vault
-docker exec -it <container_id> sh -c "vault login root && vault secrets enable transit && vault write -f transit/keys/oms-key"
+# Azure Key Vault (oms-starter-security-core): autenticacion via DefaultAzureCredential (az login)
+az login
+az keyvault create --name <mi-keyvault> --resource-group <mi-rg> --location eastus
+az keyvault key create --vault-name <mi-keyvault> --name oms-key --kty RSA --size 2048
+export AZURE_KEYVAULT_URL="https://<mi-keyvault>.vault.azure.net"
 ```
 
-Detalle completo del setup de Vault: `guia/05.-Starters/v2.0.0/oms-starter-security-core/docker-vault-test.md`.
+Detalle completo del setup de Key Vault:
+`guia/05.-Starters/v2.0.0/oms-starter-security-core/azure-keyvault-test.md`.
 
 ## Testing y calidad (Pattern 08)
 
 - `CreditCardServiceImplTest`: pruebas unitarias (JUnit 5 + Mockito) sobre la logica de negocio
   (emision, bloqueo, validacion de limite, aprobacion/rechazo por fraude).
 - `CreditCardServiceApplicationTests`: pruebas de integracion (`@SpringBootTest` + `MockMvc`) que
-  levantan el contexto completo (5 starters activos) y validan el enmascarado de datos sensibles,
-  el flujo real de autorizacion contra el simulador de fraude (via `andes-api-client`), y el
-  mapeo de errores de negocio a HTTP (404/409/422) por `andes-api-server`.
+  levantan el contexto completo (5 starters activos) y validan el cifrado/enmascarado de datos
+  sensibles (Key Vault simulado con un `CryptographyClient` mockeado, ver
+  `config/KeyVaultTestConfig.java` y [docs/ISSUES-CONOCIDOS.md](docs/ISSUES-CONOCIDOS.md)), el
+  flujo real de autorizacion contra el simulador de fraude (via `andes-api-client`), y el mapeo
+  de errores de negocio a HTTP (404/409/422) por `andes-api-server`.
 - Cobertura: `./gradlew test jacocoTestReport` (reporte en `build/reports/jacoco`).

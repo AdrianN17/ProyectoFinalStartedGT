@@ -34,19 +34,23 @@ oms:
     log-request: true
     log-response: true
     log-errors: true
-    kafka:
-      bootstrap-servers: localhost:9092
+    service-bus:
+      # Obligatorio: connection string del namespace/topico de Azure Service Bus
+      # (clave compartida SAS). No se usa DefaultAzureCredential/az login aqui.
+      connection-string: ${AZURE_SERVICEBUS_CONNECTION_STRING:}
       topic-name: topic-audit
 
   sensitive:
     enabled: true
     encrypt:
       enabled: true
-      provider: VAULT
-      vault:
-        uri: http://localhost:8200
-        token: root
-        transit-key: oms-key
+      provider: AZURE_KEY_VAULT
+      azure-key-vault:
+        # Autenticacion via DefaultAzureCredential: en local, ejecutar `az login`
+        # previamente con una cuenta/suscripcion con acceso al Key Vault.
+        # (algorithm no se especifica: usa el default del starter, RSA-OAEP-256)
+        vault-url: ${AZURE_KEYVAULT_URL:https://CHANGE-ME.vault.azure.net}
+        key-name: oms-key
     mask:
       enabled: true
       enabled-by-default: true
@@ -78,7 +82,15 @@ andes:
     client:
       clients:
         fraudCheck:
-          # Simulador interno autocontenido (FraudCheckSimulatorController) en este mismo proceso.
+          # Contrato: contracts/openapi-fraudcheck.yaml (segundo contrato del proyecto, lado
+          # cliente). Por defecto apunta al simulador interno autocontenido
+          # (FraudCheckSimulatorController) en este mismo proceso.
+          #
+          # Alternativa: para probar el cliente en aislamiento, contra un proceso externo real,
+          # levanta el mock independiente en Python (sin el envoltorio ApiResponse que aplica
+          # AndesResponseBodyAdvice a este proceso) y apunta base-url ahi:
+          #   python3 scripts/mock_fraudcheck_server.py --port 9090
+          #   andes.api.client.clients.fraudCheck.base-url=http://localhost:9090
           base-url: http://localhost:8080
           connect-timeout: 2s
           read-timeout: 5s

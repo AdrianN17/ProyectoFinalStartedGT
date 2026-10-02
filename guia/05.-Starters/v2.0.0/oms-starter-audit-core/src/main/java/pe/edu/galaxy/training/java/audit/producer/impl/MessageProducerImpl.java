@@ -1,11 +1,12 @@
 package pe.edu.galaxy.training.java.audit.producer.impl;
 
+import com.azure.messaging.servicebus.ServiceBusMessage;
+import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import pe.edu.galaxy.training.java.audit.message.AuditLogMessage;
 import pe.edu.galaxy.training.java.audit.producer.MessageProducer;
@@ -15,9 +16,10 @@ import java.util.UUID;
 //@RequiredArgsConstructor
 @Slf4j
 @Component
+@ConditionalOnProperty(prefix = "oms.audit", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class MessageProducerImpl implements MessageProducer {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ServiceBusSenderClient serviceBusSenderClient;
     private final ObjectMapper objectMapper;
     private final AuditProperties properties;
 
@@ -25,19 +27,24 @@ public class MessageProducerImpl implements MessageProducer {
     public void send(AuditLogMessage auditLogMessage) {
         try {
             String json= objectMapper.writeValueAsString(auditLogMessage);
-            log.info("TopicName =>{}",properties.getKafka().getTopicName());
+            log.info("TopicName =>{}",properties.getServiceBus().getTopicName());
             log.info("json =>{}",json);
-            kafkaTemplate.send(properties.getKafka().getTopicName(),UUID.randomUUID().toString(),json);
+
+            ServiceBusMessage message = new ServiceBusMessage(json);
+            message.setMessageId(UUID.randomUUID().toString());
+            message.setContentType("application/json");
+
+            serviceBusSenderClient.sendMessage(message);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    public MessageProducerImpl(@Qualifier("auditKafkaTemplate") KafkaTemplate<String, String> kafkaTemplate,
+    public MessageProducerImpl(@Qualifier("auditServiceBusSenderClient") ServiceBusSenderClient serviceBusSenderClient,
                                @Qualifier("auditObjectMapper") ObjectMapper objectMapper,
                                AuditProperties properties) {
-        this.kafkaTemplate = kafkaTemplate;
+        this.serviceBusSenderClient = serviceBusSenderClient;
         this.objectMapper = objectMapper;
         this.properties = properties;
     }

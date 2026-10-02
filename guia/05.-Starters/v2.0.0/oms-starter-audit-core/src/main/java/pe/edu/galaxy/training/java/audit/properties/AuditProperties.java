@@ -14,6 +14,6 @@ public class AuditProperties {
     private boolean logResponse = true;
     private boolean logErrors = true;
     private int maxPayloadLength = 8_000;
-    private KafkaProperties kafka;
+    private ServiceBusProperties serviceBus;
 
 }

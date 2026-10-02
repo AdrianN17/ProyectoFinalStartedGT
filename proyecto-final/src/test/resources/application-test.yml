@@ -1,0 +1,13 @@
+# Perfil de pruebas (application-test.yml, activado via @ActiveProfiles("test")):
+# complementa a application.yml (no lo reemplaza).
+oms:
+  sensitive:
+    encrypt:
+      # Habilitado: el cifrado se simula con un CryptographyClient mockeado
+      # (ver KeyVaultTestConfig), sin necesitar Azure Key Vault real ni az login.
+      enabled: true
+  audit:
+    # Deshabilitado en pruebas: evita que se intente abrir una conexion real a
+    # Azure Service Bus (el SDK valida la conexion de forma eager al construir
+    # el ServiceBusSenderClient, a diferencia del KafkaTemplate anterior que era lazy).
+    enabled: false

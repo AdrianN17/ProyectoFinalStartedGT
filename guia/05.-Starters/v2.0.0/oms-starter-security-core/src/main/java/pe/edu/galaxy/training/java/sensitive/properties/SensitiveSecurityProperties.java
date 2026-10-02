@@ -33,8 +33,8 @@ public class SensitiveSecurityProperties {
 
     public static class Encrypt {
         private boolean enabled = true;
-        private EncryptionProvider provider = EncryptionProvider.VAULT;
-        private final Vault vault = new Vault();
+        private EncryptionProvider provider = EncryptionProvider.AZURE_KEY_VAULT;
+        private final AzureKeyVault azureKeyVault = new AzureKeyVault();
 
         public boolean isEnabled() {
             return enabled;
@@ -52,38 +52,47 @@ public class SensitiveSecurityProperties {
             this.provider = provider;
         }
 
-        public Vault getVault() {
-            return vault;
+        public AzureKeyVault getAzureKeyVault() {
+            return azureKeyVault;
         }
     }
 
-    public static class Vault {
-        private String uri = "http://localhost:8200";
-        private String token;
-        private String transitKey = "oms-key";
+    public static class AzureKeyVault {
+        private String vaultUrl = "https://CHANGE-ME.vault.azure.net";
+        private String keyName = "oms-key";
+        private String keyVersion;
+        private String algorithm = "RSA-OAEP-256";
 
-        public String getUri() {
-            return uri;
+        public String getVaultUrl() {
+            return vaultUrl;
         }
 
-        public void setUri(String uri) {
-            this.uri = uri;
+        public void setVaultUrl(String vaultUrl) {
+            this.vaultUrl = vaultUrl;
         }
 
-        public String getToken() {
-            return token;
+        public String getKeyName() {
+            return keyName;
         }
 
-        public void setToken(String token) {
-            this.token = token;
+        public void setKeyName(String keyName) {
+            this.keyName = keyName;
         }
 
-        public String getTransitKey() {
-            return transitKey;
+        public String getKeyVersion() {
+            return keyVersion;
         }
 
-        public void setTransitKey(String transitKey) {
-            this.transitKey = transitKey;
+        public void setKeyVersion(String keyVersion) {
+            this.keyVersion = keyVersion;
+        }
+
+        public String getAlgorithm() {
+            return algorithm;
+        }
+
+        public void setAlgorithm(String algorithm) {
+            this.algorithm = algorithm;
         }
     }
 

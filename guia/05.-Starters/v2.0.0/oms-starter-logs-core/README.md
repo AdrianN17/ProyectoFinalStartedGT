@@ -1,6 +1,6 @@
 # oms-starter-logs-core
 
-Starter corporativo de logging para microservicios Spring Boot.
+Starter corporativo de logging para microservicios Spring Boot 4.1.1 (Java 21).
 
 Incluye:
 
@@ -19,7 +19,7 @@ Incluye:
 ## Uso en un microservicio
 
 ```gradle
-implementation 'pe.edu.galaxy.training.java:oms-starter-logs-core:1.0.0'
+implementation 'pe.edu.galaxy.training.java:oms-starter-logs-core:3.0.0'
 ```
 
 ## Configuración

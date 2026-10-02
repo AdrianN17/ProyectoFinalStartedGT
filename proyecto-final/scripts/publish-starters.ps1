@@ -1,14 +1,21 @@
 <#
 .SYNOPSIS
-    Publica en Maven Local (~/.m2/repository) el BOM y los cuatro Galaxy Starters (v2.0.0)
-    ubicados en guia/05.-Starters/v2.0.0, y el BOM + artefactos de andes-api-toolkit, para que
-    puedan ser resueltos por bank-creditcard-service.
+    Publica en Maven Local (~/.m2/repository) el BOM y los cuatro Galaxy Starters (v3.0.0)
+    ubicados en guia/05.-Starters/v2.0.0, para que puedan ser resueltos por
+    bank-creditcard-service.
 
 .DESCRIPTION
     Automatiza el Pattern 09 (Publicacion y Versionamiento) de la rubrica: en vez de ejecutar
     manualmente "gradlew publishToMavenLocal" / "mvn clean install" en cada starter, este
-    script recorre todos ellos en el orden correcto (starters Galaxy, BOM Galaxy, andes-api-toolkit).
-    No modifica ningun archivo dentro de guia/ ni de andes-api-toolkit/, solo ejecuta sus builds.
+    script recorre todos ellos en el orden correcto (starters Galaxy, BOM Galaxy).
+    No modifica ningun archivo dentro de guia/, solo ejecuta sus builds.
+
+    El toolkit "andes-api-toolkit" (pe.andes.api:*) YA NO se construye ni publica localmente:
+    se resuelve directamente desde el repositorio corporativo Nexus
+    (http://localhost:8089/repository/maven-releases|maven-snapshots), configurado en
+    build.gradle. Para que la resolucion funcione, define las credenciales de Nexus en
+    ~/.gradle/gradle.properties (nexusUser/nexusPassword) o como variables de entorno
+    ORG_GRADLE_PROJECT_nexusUser / ORG_GRADLE_PROJECT_nexusPassword. Ver README.md.
 
 .EXAMPLE
     ./scripts/publish-starters.ps1
@@ -55,17 +62,5 @@ finally {
     Pop-Location
 }
 
-Write-Host "`n==> Publicando andes-api-toolkit (Maven) en Maven Local" -ForegroundColor Cyan
-$andesPath = Join-Path $scriptDir "..\..\andes-api-toolkit" | Resolve-Path
-Push-Location $andesPath
-try {
-    & mvn clean install -q -DskipTests
-    if ($LASTEXITCODE -ne 0) {
-        throw "Fallo publicando andes-api-toolkit (exit code $LASTEXITCODE)"
-    }
-}
-finally {
-    Pop-Location
-}
-
-Write-Host "`nStarters y BOMs (Galaxy + Andes) publicados correctamente en Maven Local." -ForegroundColor Green
+Write-Host "`nStarters y BOM Galaxy publicados correctamente en Maven Local." -ForegroundColor Green
+Write-Host "andes-api-toolkit (pe.andes.api:*) se resuelve desde Nexus; no requiere build local." -ForegroundColor Green

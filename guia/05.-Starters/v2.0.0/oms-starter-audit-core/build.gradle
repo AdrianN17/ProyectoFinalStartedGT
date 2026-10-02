@@ -1,12 +1,12 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'org.springframework.boot' version '3.3.5'
-    id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.springframework.boot' version '4.1.1'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'pe.edu.galaxy.training.java'
-version = '2.0.0'
+version = '3.0.0'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -20,22 +20,32 @@ configurations {
     }
 }
 
+tasks.named('bootJar') {
+    enabled = false
+}
+tasks.named('jar') {
+    enabled = true
+}
+
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.boot:spring-boot-dependencies:3.3.5"
+        mavenBom "org.springframework.boot:spring-boot-dependencies:4.1.1"
+        mavenBom "com.azure.spring:spring-cloud-azure-dependencies:7.4.0"
     }
 }
 
 dependencies {
-    api 'org.springframework.boot:spring-boot-starter-aop'
+    api 'org.springframework.boot:spring-boot-starter-aspectj'
     //api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    api 'org.springframework:spring-tx'
     api 'com.fasterxml.jackson.core:jackson-databind'
 
     compileOnly 'org.springframework.boot:spring-boot-autoconfigure'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-    api 'org.springframework.kafka:spring-kafka'
+    // Service Bus se autentica solo con connection string (sin DefaultAzureCredential/az login)
+    api 'com.azure:azure-messaging-servicebus'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -68,6 +78,18 @@ publishing {
     }
     repositories {
         mavenLocal()
+        maven {
+            name = "nexus"
+            boolean isSnapshot = version.toString().endsWith("SNAPSHOT")
+            url = isSnapshot
+                    ? "http://localhost:8089/repository/maven-snapshots/"
+                    : "http://localhost:8089/repository/maven-releases/"
+            allowInsecureProtocol = true
+            credentials {
+                username = findProperty('nexusUser')
+                password = findProperty('nexusPassword')
+            }
+        }
     }
 }
 

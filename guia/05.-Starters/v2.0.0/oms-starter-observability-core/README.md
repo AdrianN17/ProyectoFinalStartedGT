@@ -1,6 +1,6 @@
 # oms-starter-observability
 
-Starter para observabilidad en microservicios Spring Boot.
+Starter para observabilidad en microservicios Spring Boot 4.1.1 (Java 21).
 
 Incluye:
 
@@ -21,7 +21,7 @@ Incluye:
 ## Consumir en microservicio
 
 ```gradle
-implementation 'pe.edu.galaxy.training.java:oms-starter-observability:1.0.0'
+implementation 'pe.edu.galaxy.training.java:oms-starter-observability-core:3.0.0'
 ```
 
 ## application.yml

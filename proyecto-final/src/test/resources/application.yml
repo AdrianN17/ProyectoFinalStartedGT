@@ -1,6 +1,0 @@
-# Perfil de pruebas: desactiva Vault (no hay infraestructura externa en CI/local).
-# El enmascarado (oms.sensitive.mask.enabled) y el resto de starters permanecen activos.
-oms:
-  sensitive:
-    encrypt:
-      enabled: false

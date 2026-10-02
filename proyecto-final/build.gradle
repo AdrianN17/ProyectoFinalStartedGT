@@ -6,6 +6,7 @@ plugins {
     id 'jacoco'
     id 'org.springframework.boot' version '4.1.1'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.openapi.generator' version '7.25.0'
 }
 
 group = 'pe.edu.galaxy.training.java.gt'
@@ -19,8 +20,23 @@ java {
 }
 
 repositories {
-    mavenLocal()
+    maven {
+        url 'http://localhost:8089/repository/maven-releases/'
+        allowInsecureProtocol = true
+        credentials {
+            username findProperty('nexusUser')
+            password findProperty('nexusPassword')
+        }
+    }
     mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        // Requerido para resolver versiones de los artefactos de Azure (Key Vault, Service Bus)
+        // usados transitivamente por oms-starter-security-core / oms-starter-audit-core.
+        mavenBom "com.azure.spring:spring-cloud-azure-dependencies:7.4.0"
+    }
 }
 
 configurations {
@@ -30,9 +46,9 @@ configurations {
 }
 
 dependencies {
-    // BOMs: Galaxy Starters (Gradle/Maven Local) + Andes API Toolkit (Maven/Maven Local)
-    implementation platform('pe.edu.galaxy.training.java.bom:oms-starter-bom-core:2.0.0')
-    implementation platform('pe.andes.api:andes-api-bom:1.0.0-SNAPSHOT')
+    // BOMs: Galaxy Starters + Andes API Toolkit (Nexus corporativo: maven-releases)
+    implementation platform('pe.edu.galaxy.training.java.bom:oms-starter-bom-core:3.0.0')
+    implementation platform('pe.andes.api:andes-api-bom:1.0.0')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -45,10 +61,18 @@ dependencies {
     implementation 'pe.edu.galaxy.training.java:oms-starter-security-core'
     implementation 'pe.edu.galaxy.training.java:oms-starter-observability-core'
 
-    // Andes API Toolkit (starter propio, curso Java Library Development)
+    // Andes API Toolkit (starter propio, curso Java Library Development) — resuelto desde Nexus
     implementation 'pe.andes.api:andes-api-common'
     implementation 'pe.andes.api:andes-api-server-spring-boot-starter'
     implementation 'pe.andes.api:andes-api-client-spring-boot-starter'
+    // IdGeneratorService (bean Spring, recomendado) para referenceId de transacciones.
+    implementation 'pe.andes.api:andes-id-generator-spring-boot-starter'
+    // Libreria clasica (sin Spring, metodos static) usada directamente para el checksum de
+    // idempotencia — demuestra el uso "sin Spring" descrito en la guia de andes-id-generator.
+    implementation 'pe.andes.api:andes-id-generator'
+    // MaskUtils/SlugUtils (clasica, sin Spring) para enmascarar en logs y generar el slug de
+    // comercio de cada transaccion.
+    implementation 'pe.andes.api:andes-text-utils'
     implementation 'io.swagger.core.v3:swagger-models:2.2.22'
 
     compileOnly 'org.projectlombok:lombok'
@@ -57,6 +81,8 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.wiremock:wiremock-standalone:3.5.4'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
@@ -74,3 +100,43 @@ jacocoTestReport {
         html.required = true
     }
 }
+
+// Segundo contrato del proyecto (lado cliente): modelos generados desde
+// contracts/openapi-fraudcheck.yaml para la API externa de scoring de fraude que
+// FraudCheckClient (andes-api-client-spring-boot-starter) consume. Solo se generan
+// los modelos (sin interfaces de API ni documentacion): el transporte HTTP, timeouts,
+// correlation id y mapeo de errores los aporta el starter de cliente, no el codigo generado.
+openApiGenerate {
+    generatorName = 'spring'
+    inputSpec = "$projectDir/contracts/openapi-fraudcheck.yaml"
+    outputDir = "$buildDir/generated/openapi"
+    modelPackage = 'pe.edu.galaxy.training.java.gt.creditcard.fraud.generated'
+    apiPackage = 'pe.edu.galaxy.training.java.gt.creditcard.fraud.generated.api'
+    invokerPackage = 'pe.edu.galaxy.training.java.gt.creditcard.fraud.generated.invoker'
+    generateApiTests = false
+    generateModelTests = false
+    generateApiDocumentation = false
+    generateModelDocumentation = false
+    skipOverwrite = false
+    globalProperties.set([
+            models  : '',
+            apis    : 'false',
+            supportingFiles: 'false',
+    ])
+    configOptions.set([
+            useBeanValidation: 'false',
+            useSpringBoot3   : 'true',
+            openApiNullable  : 'false',
+            documentationProvider: 'none',
+    ])
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated/openapi/src/main/java"
+        }
+    }
+}
+
+compileJava.dependsOn tasks.named('openApiGenerate')

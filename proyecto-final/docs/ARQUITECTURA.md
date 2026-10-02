@@ -4,18 +4,20 @@
 
 ```mermaid
 graph TB
-    subgraph "guia/05.-Starters/v2.0.0 (solo lectura, se publica a Maven Local)"
-        BOM["oms-starter-bom-core:2.0.0<br/>(BOM)"]
+    subgraph "guia/05.-Starters/v2.0.0 (solo lectura, se publica a Nexus/Maven Local)"
+        BOM["oms-starter-bom-core:3.0.0<br/>(BOM)"]
         LOGS["oms-starter-logs-core"]
         AUDIT["oms-starter-audit-core"]
         SEC["oms-starter-security-core"]
         OBS["oms-starter-observability-core"]
     end
 
-    subgraph "andes-api-toolkit (raiz del workspace, se publica a Maven Local)"
-        ANDESBOM["andes-api-bom:1.0.0-SNAPSHOT"]
+    subgraph "andes-api-toolkit (repo externo, resuelto desde Nexus maven-releases)"
+        ANDESBOM["andes-api-bom:1.0.0"]
         ASERVER["andes-api-server-spring-boot-starter"]
         ACLIENT["andes-api-client-spring-boot-starter"]
+        AIDGEN["andes-id-generator(-spring-boot-starter)"]
+        ATEXT["andes-text-utils"]
     end
 
     subgraph "proyecto-final/ (bank-creditcard-service, proyecto unico)"
@@ -29,6 +31,8 @@ graph TB
     BOM -. gestiona versiones .-> OBS
     ANDESBOM -. gestiona versiones .-> ASERVER
     ANDESBOM -. gestiona versiones .-> ACLIENT
+    ANDESBOM -. gestiona versiones .-> AIDGEN
+    ANDESBOM -. gestiona versiones .-> ATEXT
 
     LOGS --> APP
     AUDIT --> APP
@@ -36,9 +40,11 @@ graph TB
     OBS --> APP
     ASERVER --> APP
     ACLIENT --> APP
+    AIDGEN --> APP
+    ATEXT --> APP
 
-    APP -->|topic-audit| KAFKA[(Kafka)]
-    APP -->|transit encrypt/decrypt| VAULT[(HashiCorp Vault)]
+    APP -->|topic-audit| SBUS[(Azure Service Bus)]
+    APP -->|encrypt/decrypt via clave administrada| AKV[(Azure Key Vault)]
     APP -->|/actuator/prometheus| PROM[(Prometheus)]
     ACLIENT -->|HTTP self-call| FRAUD
 ```
@@ -58,7 +64,7 @@ sequenceDiagram
     participant Client as FraudCheckClient (andes-api-client)
     participant Fraud as FraudCheckSimulatorController
     participant DB as H2
-    participant Kafka as Kafka (topic-audit)
+    participant SBus as Azure Service Bus (topic-audit)
 
     C->>F: POST /api/v1/credit-cards/{id}/transactions
     F->>F: TraceId/CorrelationId (MDC)
@@ -68,15 +74,15 @@ sequenceDiagram
     Svc->>Asp: @ObservedMetric + @Auditable + @LogOperation
     Asp->>Repo: findById(cardId)
     Repo->>SecAsp: @AfterReturning find*(..)
-    SecAsp->>SecAsp: descifra cardNumber/cvv (@Encrypt)
+    SecAsp->>SecAsp: descifra cardNumber/cvv (@Encrypt, Azure Key Vault)
     Svc->>Client: evaluate(cardId, merchant, amount)
     Client->>Fraud: POST /internal/fraud-check
-    Fraud-->>Client: riskScore
+    Fraud-->>Client: ApiResponse{data: riskScore}
     Client-->>Svc: FraudCheckResponse
     Svc->>Repo: save(transaction) + save(card actualizado)
     Repo->>SecAsp: @Before save(..)
-    SecAsp->>DB: UPDATE (valores cifrados)
-    Asp->>Kafka: publica evento de auditoria (async)
+    SecAsp->>DB: UPDATE (valores cifrados con Azure Key Vault)
+    Asp->>SBus: publica evento de auditoria (async, via ServiceBusSenderClient)
     Asp-->>Svc: metrica registrada (Micrometer)
     Svc-->>Ctrl: TransactionResponse
     Ctrl-->>C: 201 Created {success, data, error, metadata}
