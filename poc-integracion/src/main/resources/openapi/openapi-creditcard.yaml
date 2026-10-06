@@ -1,0 +1,330 @@
+openapi: 3.0.3
+info:
+  title: Bank Credit Card API
+  version: 1.0.0
+  description: Contrato API-first para la gestion de tarjetas de credito.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/v1/credit-cards:
+    post:
+      tags: [CreditCards]
+      operationId: issueCreditCard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueCardRequest'
+      responses:
+        '201':
+          description: Tarjeta creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditCardEnvelope'
+        '422':
+          description: Error de validacion o fraude
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /api/v1/credit-cards/{cardId}:
+    get:
+      tags: [CreditCards]
+      operationId: getCreditCard
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Tarjeta encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditCardEnvelope'
+        '404':
+          description: Tarjeta no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /api/v1/credit-cards/{cardId}/status:
+    patch:
+      tags: [CreditCards]
+      operationId: updateCreditCardStatus
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardStatusUpdateRequest'
+      responses:
+        '200':
+          description: Estado actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditCardEnvelope'
+        '404':
+          description: Tarjeta no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Conflicto de estado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+  /api/v1/credit-cards/{cardId}/transactions:
+    post:
+      tags: [Transactions]
+      operationId: authorizeTransaction
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+      responses:
+        '201':
+          description: Transaccion autorizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionEnvelope'
+        '404':
+          description: Tarjeta no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: Tarjeta no activa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '422':
+          description: Validacion de negocio
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    get:
+      tags: [Transactions]
+      operationId: listTransactions
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Lista de transacciones
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionListEnvelope'
+        '404':
+          description: Tarjeta no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+components:
+  schemas:
+    IssueCardRequest:
+      type: object
+      required: [cardHolderName, cardNumber, cvv, expirationMonth, expirationYear, creditLimit]
+      properties:
+        cardHolderName:
+          type: string
+        cardNumber:
+          type: string
+        cvv:
+          type: string
+        expirationMonth:
+          type: integer
+        expirationYear:
+          type: integer
+        creditLimit:
+          type: number
+          format: double
+    CardStatusUpdateRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ACTIVE, BLOCKED, CANCELLED]
+    TransactionRequest:
+      type: object
+      required: [merchant, amount, type]
+      properties:
+        merchant:
+          type: string
+        amount:
+          type: number
+          format: double
+        type:
+          type: string
+          enum: [PURCHASE, PAYMENT, REFUND]
+    CreditCard:
+      type: object
+      required: [id, cardHolderName, cardNumber, cvv, expirationMonth, expirationYear, creditLimit, availableBalance, status, createdAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        cardHolderName:
+          type: string
+        cardNumber:
+          type: string
+        cvv:
+          type: string
+        expirationMonth:
+          type: integer
+        expirationYear:
+          type: integer
+        creditLimit:
+          type: number
+          format: double
+        availableBalance:
+          type: number
+          format: double
+        status:
+          type: string
+          enum: [ACTIVE, BLOCKED, CANCELLED]
+        createdAt:
+          type: string
+          format: date-time
+    Transaction:
+      type: object
+      required: [id, referenceId, cardId, merchant, merchantSlug, amount, type, status, fraudScore, createdAt]
+      properties:
+        id:
+          type: integer
+          format: int64
+        referenceId:
+          type: string
+        cardId:
+          type: integer
+          format: int64
+        merchant:
+          type: string
+        merchantSlug:
+          type: string
+        amount:
+          type: number
+          format: double
+        type:
+          type: string
+          enum: [PURCHASE, PAYMENT, REFUND]
+        status:
+          type: string
+          enum: [APPROVED, REJECTED]
+        fraudScore:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+    ApiMetadata:
+      type: object
+      properties:
+        traceId:
+          type: string
+        correlationId:
+          type: string
+        requestId:
+          type: string
+        apiVersion:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    ApiError:
+      type: object
+      required: [code, message, httpStatus]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        httpStatus:
+          type: integer
+        traceId:
+          type: string
+    CreditCardEnvelope:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/CreditCard'
+        error:
+          $ref: '#/components/schemas/ApiError'
+        metadata:
+          $ref: '#/components/schemas/ApiMetadata'
+    ErrorEnvelope:
+      type: object
+      required: [success, error]
+      properties:
+        success:
+          type: boolean
+          example: false
+        data:
+          nullable: true
+        error:
+          $ref: '#/components/schemas/ApiError'
+        metadata:
+          $ref: '#/components/schemas/ApiMetadata'
+    TransactionEnvelope:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/Transaction'
+        error:
+          $ref: '#/components/schemas/ApiError'
+        metadata:
+          $ref: '#/components/schemas/ApiMetadata'
+    TransactionListEnvelope:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        error:
+          $ref: '#/components/schemas/ApiError'
+        metadata:
+          $ref: '#/components/schemas/ApiMetadata'

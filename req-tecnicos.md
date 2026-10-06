@@ -396,7 +396,7 @@ El proyecto consumidor debe aportar `spring-boot-starter-web` (+ `spring-boot-st
 Documenta la implementación real (verificada end-to-end) de publicación y consumo en Nexus de
 los **4 Galaxy Starters + su BOM** (`guia/05.-Starters/v2.0.0/`, ecosistema *hermano* de
 `andes-api-toolkit` dentro del mismo Nexus, pero con otro `groupId`), tal como lo consume
-`proyecto-final/bank-creditcard-service`.
+`poc-integracion/poc-integracion`.
 
 ### 17.1 Artefactos y coordenadas
 
@@ -468,13 +468,13 @@ permitir redeploy en entornos de desarrollo.
 
 ### 17.4 Scripts de publicación
 
-- `proyecto-final/scripts/publish-starters.ps1`: `gradlew publishToMavenLocal` + `mvn install`
+- `poc-integracion/scripts/publish-starters.ps1`: `gradlew publishToMavenLocal` + `mvn install`
   (solo Maven Local, para desarrollo offline).
-- `proyecto-final/scripts/publish-starters-to-nexus.ps1` / `.sh`: equivalentes usando
+- `poc-integracion/scripts/publish-starters-to-nexus.ps1` / `.sh`: equivalentes usando
   `gradlew publish` + `mvn deploy` (Nexus), mismo orden de starters, mismo manejo de errores
   (`$LASTEXITCODE` / `set -euo pipefail`).
 
-### 17.5 Consumo desde un proyecto Gradle (Groovy DSL, caso real de `proyecto-final`)
+### 17.5 Consumo desde un proyecto Gradle (Groovy DSL, caso real de `poc-integracion`)
 
 ```groovy
 repositories {
@@ -499,7 +499,7 @@ dependencies {
 }
 ```
 
-Notas de integración verificadas (ver `proyecto-final/docs/ISSUES-CONOCIDOS.md` para el detalle
+Notas de integración verificadas (ver `poc-integracion/docs/ISSUES-CONOCIDOS.md` para el detalle
 completo de cada bug real encontrado y corregido durante la migración):
 
 - `io.spring.dependency-management` **no** hornea versiones resueltas en el POM/Gradle Module
@@ -511,5 +511,5 @@ completo de cada bug real encontrado y corregido durante la migración):
   `VaultTemplate`, que son lazy) — ambos starters gatean esos beans con
   `@ConditionalOnProperty`/`@ConditionalOnBean` para no romper el arranque cuando la función está
   deshabilitada (tests, entornos sin Azure real).
-- Verificación end-to-end: `gradle clean build` en `proyecto-final` → 11/11 tests, `BUILD SUCCESSFUL`,
+- Verificación end-to-end: `gradle clean build` en `poc-integracion` → 11/11 tests, `BUILD SUCCESSFUL`,
   con los starters y el BOM resueltos 100% desde Nexus (sin `mavenLocal()`).

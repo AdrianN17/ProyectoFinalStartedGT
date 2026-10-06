@@ -1,0 +1,105 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: poc-integracion
+  datasource:
+    url: jdbc:h2:mem:creditcarddb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+
+# --- Galaxy Starters (Starter Development) ---
+oms:
+  logs:
+    enabled: true
+    service-name: ${spring.application.name}
+    trace-header-name: X-Trace-Id
+    correlation-header-name: X-Correlation-Id
+    excluded-paths:
+      - /actuator/health
+      - /h2-console
+
+  audit:
+    enabled: true
+    service-name: ${spring.application.name}
+    log-request: true
+    log-response: true
+    log-errors: true
+    service-bus:
+      # Obligatorio: connection string del namespace de Azure Service Bus
+      # (clave compartida SAS). No se usa DefaultAzureCredential/az login aqui.
+      connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING}
+      # En SKU Basic solo hay colas; el sender custom de la app usara este valor.
+      queue-name: queue-audit
+
+  sensitive:
+    enabled: true
+    encrypt:
+      enabled: true
+      provider: AZURE_KEY_VAULT
+      azure-key-vault:
+        # Autenticacion via DefaultAzureCredential: en local, ejecutar `az login`
+        # previamente con una cuenta/suscripcion con acceso al Key Vault.
+        # (algorithm no se especifica: usa el default del starter, RSA-OAEP-256)
+        vault-url: https://azkvadrian1.vault.azure.net/
+        key-name: oms-key
+    mask:
+      enabled: true
+      enabled-by-default: true
+    audit:
+      enabled: true
+
+  observability:
+    enabled: true
+    service-name: ${spring.application.name}
+    business-metrics-enabled: true
+    method-metrics-enabled: true
+    health-enabled: true
+
+# --- Andes API Toolkit (starter propio, Java Library Development) ---
+andes:
+  api:
+    server:
+      correlation:
+        enabled: true
+      response:
+        wrap-enabled: false
+      error-handling:
+        enabled: true
+      openapi:
+        enabled: true
+        title: Bank Credit Card API
+        description: Ver src/main/resources/openapi/openapi-creditcard.yaml
+        version: 1.0.0
+    client:
+      clients:
+        fraudCheck:
+          # Contrato: src/main/resources/openapi/openapi-fraudcheck.yaml (segundo contrato del proyecto, lado
+          # cliente). Para la demo se consume SIEMPRE el mock externo en Python:
+          #   python3 scripts/mock_fraudcheck_server.py --port 9090
+          base-url: http://localhost:9090
+          connect-timeout: 2s
+          read-timeout: 5s
+          correlation-id-enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  prometheus:
+    metrics:
+      export:
+        enabled: true
