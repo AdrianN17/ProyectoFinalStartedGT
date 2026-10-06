@@ -48,7 +48,7 @@ configurations {
 dependencies {
     // BOMs: Galaxy Starters + Andes API Toolkit (Nexus corporativo: maven-releases)
     implementation platform('pe.edu.galaxy.training.java.bom:oms-starter-bom-core:3.0.3')
-    implementation platform('pe.andes.api:andes-api-bom:1.0.0')
+    implementation platform('pe.andes.api:andes-api-bom:1.0.9')
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -65,13 +65,8 @@ dependencies {
     implementation 'pe.andes.api:andes-api-common'
     implementation 'pe.andes.api:andes-api-server-spring-boot-starter'
     implementation 'pe.andes.api:andes-api-client-spring-boot-starter'
-    // IdGeneratorService (bean Spring, recomendado) para referenceId de transacciones.
     implementation 'pe.andes.api:andes-id-generator-spring-boot-starter'
-    // Libreria clasica (sin Spring, metodos static) usada directamente para el checksum de
-    // idempotencia — demuestra el uso "sin Spring" descrito en la guia de andes-id-generator.
     implementation 'pe.andes.api:andes-id-generator'
-    // MaskUtils/SlugUtils (clasica, sin Spring) para enmascarar en logs y generar el slug de
-    // comercio de cada transaccion.
     implementation 'pe.andes.api:andes-text-utils'
     implementation 'io.swagger.core.v3:swagger-models:2.2.22'
 
